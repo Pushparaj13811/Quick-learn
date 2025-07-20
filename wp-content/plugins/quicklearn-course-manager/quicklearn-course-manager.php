@@ -77,6 +77,13 @@ class QuickLearn_Course_Manager {
         require_once QLCM_PLUGIN_PATH . 'includes/seo-optimization.php';
         require_once QLCM_PLUGIN_PATH . 'includes/user-enrollment.php';
         require_once QLCM_PLUGIN_PATH . 'includes/course-ratings.php';
+        require_once QLCM_PLUGIN_PATH . 'includes/certificate-system.php';
+        require_once QLCM_PLUGIN_PATH . 'includes/certificate-test.php';
+        require_once QLCM_PLUGIN_PATH . 'includes/multimedia-content.php';
+        require_once QLCM_PLUGIN_PATH . 'includes/course-modules.php';
+        require_once QLCM_PLUGIN_PATH . 'includes/course-forums.php';
+        require_once QLCM_PLUGIN_PATH . 'includes/course-qa.php';
+        require_once QLCM_PLUGIN_PATH . 'includes/user-profiles.php';
         require_once QLCM_PLUGIN_PATH . 'includes/admin-pages.php';
     }
     
@@ -142,6 +149,16 @@ class QuickLearn_Course_Manager {
         // Initialize AJAX handlers
         if (class_exists('QLCM_Ajax_Handlers')) {
             QLCM_Ajax_Handlers::get_instance();
+        }
+        
+        // Initialize multimedia content
+        if (class_exists('QLCM_Multimedia_Content')) {
+            QLCM_Multimedia_Content::get_instance();
+        }
+        
+        // Initialize course modules
+        if (class_exists('QLCM_Course_Modules')) {
+            QLCM_Course_Modules::get_instance();
         }
     }
     
