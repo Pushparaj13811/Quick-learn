@@ -100,10 +100,21 @@ class QLCM_Test_Runner {
      */
     private function run_phpunit_tests() {
         $test_files = array(
+            // Core functionality tests
             'unit/test-course-cpt.php',
             'unit/test-course-taxonomy.php',
             'unit/test-ajax-handlers.php',
+            
+            // Enhanced features tests
+            'unit/test-user-enrollment.php',
+            'unit/test-course-ratings.php',
+            'unit/test-certificate-system.php',
+            'unit/test-seo-optimization.php',
+            'unit/test-multimedia-content.php',
+            
+            // Integration tests
             'integration/test-course-workflow.php',
+            'integration/test-enhanced-features-workflow.php',
         );
         
         foreach ($test_files as $test_file) {
@@ -113,6 +124,11 @@ class QLCM_Test_Runner {
                 // In a real scenario, you would execute PHPUnit here
                 // For now, we'll simulate the test execution
                 $this->simulate_phpunit_test($test_file);
+            } else {
+                echo "Test file not found: {$test_file}\n";
+                $this->log_failure("Test file missing: {$test_file}");
+                $this->failed_tests++;
+                $this->total_tests++;
             }
         }
     }

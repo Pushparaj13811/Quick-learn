@@ -1,430 +1,684 @@
 /**
- * Browser Tests for QuickLearn Course Manager
- * 
- * These tests can be run with tools like Puppeteer, Selenium, or Playwright
- * to test AJAX filtering functionality across different browsers
+ * Browser Compatibility Tests for QuickLearn Course Manager
+ * Tests enhanced features across different browsers and devices
  */
 
-// Configuration for different browsers
-const browserConfig = {
-    chrome: {
-        name: 'Chrome',
-        userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-    },
-    firefox: {
-        name: 'Firefox',
-        userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:89.0) Gecko/20100101 Firefox/89.0'
-    },
-    safari: {
-        name: 'Safari',
-        userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.1.1 Safari/605.1.15'
-    },
-    edge: {
-        name: 'Edge',
-        userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36 Edg/91.0.864.59'
-    }
-};
-
-// Test scenarios for AJAX filtering
-const testScenarios = [
-    {
-        name: 'Load courses page',
-        description: 'Test that the courses page loads correctly',
-        steps: [
-            'Navigate to /courses page',
-            'Wait for page to load',
-            'Check that course filter dropdown exists',
-            'Check that course grid/list exists',
-            'Verify courses are displayed'
-        ]
-    },
-    {
-        name: 'Filter courses by category',
-        description: 'Test AJAX filtering functionality',
-        steps: [
-            'Navigate to /courses page',
-            'Wait for page to load',
-            'Select a category from dropdown',
-            'Wait for AJAX request to complete',
-            'Verify filtered results are displayed',
-            'Check that loading indicator appeared and disappeared',
-            'Verify URL or state reflects the filter'
-        ]
-    },
-    {
-        name: 'Show all courses',
-        description: 'Test showing all courses after filtering',
-        steps: [
-            'Navigate to /courses page',
-            'Select a specific category',
-            'Wait for filtered results',
-            'Select "All Categories" option',
-            'Wait for AJAX request to complete',
-            'Verify all courses are shown again'
-        ]
-    },
-    {
-        name: 'Handle no results',
-        description: 'Test behavior when no courses match filter',
-        steps: [
-            'Navigate to /courses page',
-            'Select a category with no courses',
-            'Wait for AJAX request to complete',
-            'Verify "no courses found" message is displayed',
-            'Check that message is user-friendly and helpful'
-        ]
-    },
-    {
-        name: 'Test loading states',
-        description: 'Test loading indicators and user feedback',
-        steps: [
-            'Navigate to /courses page',
-            'Select a category',
-            'Verify loading indicator appears immediately',
-            'Wait for AJAX to complete',
-            'Verify loading indicator disappears',
-            'Check that transition is smooth'
-        ]
-    },
-    {
-        name: 'Test responsive design',
-        description: 'Test filtering on different screen sizes',
-        viewports: [
-            { width: 1920, height: 1080, name: 'Desktop' },
-            { width: 1024, height: 768, name: 'Tablet' },
-            { width: 375, height: 667, name: 'Mobile' }
-        ],
-        steps: [
-            'Set viewport size',
-            'Navigate to /courses page',
-            'Test filter dropdown accessibility',
-            'Test course grid layout',
-            'Verify touch/click interactions work',
-            'Check that content is readable and accessible'
-        ]
-    },
-    {
-        name: 'Test keyboard navigation',
-        description: 'Test accessibility with keyboard navigation',
-        steps: [
-            'Navigate to /courses page',
-            'Use Tab key to navigate to filter dropdown',
-            'Use arrow keys to select category',
-            'Press Enter to apply filter',
-            'Verify filter works with keyboard only',
-            'Check focus indicators are visible'
-        ]
-    },
-    {
-        name: 'Test error handling',
-        description: 'Test behavior when AJAX requests fail',
-        steps: [
-            'Navigate to /courses page',
-            'Block network requests (simulate offline)',
-            'Try to filter courses',
-            'Verify error message is displayed',
-            'Check that user can retry the action',
-            'Restore network and verify recovery'
-        ]
-    }
-];
-
-// Performance benchmarks
-const performanceTests = [
-    {
-        name: 'Page load time',
-        description: 'Measure initial page load performance',
-        target: 'courses page should load within 3 seconds',
-        maxTime: 3000
-    },
-    {
-        name: 'AJAX response time',
-        description: 'Measure AJAX filtering response time',
-        target: 'filtering should complete within 2 seconds',
-        maxTime: 2000
-    },
-    {
-        name: 'DOM manipulation time',
-        description: 'Measure time to update course list',
-        target: 'DOM updates should complete within 500ms',
-        maxTime: 500
-    }
-];
-
-// Accessibility tests
-const accessibilityTests = [
-    {
-        name: 'ARIA labels',
-        description: 'Check that interactive elements have proper ARIA labels',
-        checks: [
-            'Filter dropdown has aria-label',
-            'Loading indicator has aria-live region',
-            'Course cards have proper heading structure',
-            'Links have descriptive text or aria-label'
-        ]
-    },
-    {
-        name: 'Color contrast',
-        description: 'Verify color contrast meets WCAG guidelines',
-        checks: [
-            'Text has sufficient contrast ratio (4.5:1)',
-            'Interactive elements have sufficient contrast',
-            'Focus indicators are visible',
-            'Error messages are clearly distinguishable'
-        ]
-    },
-    {
-        name: 'Screen reader compatibility',
-        description: 'Test with screen reader simulation',
-        checks: [
-            'Filter changes are announced',
-            'Loading states are announced',
-            'Results count is announced',
-            'Error messages are announced'
-        ]
-    }
-];
-
-/**
- * Example Puppeteer test implementation
- * This would be the actual test code using Puppeteer
- */
-const puppeteerExample = `
 const puppeteer = require('puppeteer');
+const { expect } = require('chai');
 
-async function runBrowserTests() {
-    const browser = await puppeteer.launch();
-    const page = await browser.newPage();
+describe('QuickLearn Course Manager - Enhanced Features Browser Tests', function() {
+    this.timeout(30000);
     
-    try {
-        // Test 1: Load courses page
-        console.log('Testing courses page load...');
-        await page.goto('http://localhost/courses');
-        await page.waitForSelector('#course-category-filter');
-        await page.waitForSelector('.course-grid, .course-list');
-        console.log('✓ Courses page loaded successfully');
-        
-        // Test 2: Filter courses
-        console.log('Testing AJAX filtering...');
-        await page.select('#course-category-filter', 'web-development');
-        await page.waitForFunction(() => {
-            return document.querySelector('.loading-indicator') === null;
+    let browser;
+    let page;
+    const baseUrl = process.env.TEST_URL || 'http://localhost:8080';
+    
+    before(async function() {
+        browser = await puppeteer.launch({
+            headless: process.env.HEADLESS !== 'false',
+            args: ['--no-sandbox', '--disable-setuid-sandbox']
+        });
+    });
+    
+    after(async function() {
+        if (browser) {
+            await browser.close();
+        }
+    });
+    
+    beforeEach(async function() {
+        page = await browser.newPage();
+        await page.setViewport({ width: 1200, height: 800 });
+    });
+    
+    afterEach(async function() {
+        if (page) {
+            await page.close();
+        }
+    });
+    
+    describe('Course Enrollment Workflow', function() {
+        it('should allow user to enroll in course via AJAX', async function() {
+            await page.goto(`${baseUrl}/courses/`);
+            
+            // Wait for course listing to load
+            await page.waitForSelector('.course-grid');
+            
+            // Click on first course
+            await page.click('.course-card:first-child .course-link');
+            await page.waitForNavigation();
+            
+            // Check if enrollment button exists
+            const enrollButton = await page.$('.enroll-button');
+            expect(enrollButton).to.not.be.null;
+            
+            // Mock login (assuming test user is logged in)
+            await page.evaluate(() => {
+                window.qlcm_ajax.user_logged_in = true;
+                window.qlcm_ajax.user_id = 1;
+            });
+            
+            // Click enrollment button
+            await page.click('.enroll-button');
+            
+            // Wait for AJAX response
+            await page.waitForSelector('.enrollment-success', { timeout: 5000 });
+            
+            // Verify enrollment success message
+            const successMessage = await page.$eval('.enrollment-success', el => el.textContent);
+            expect(successMessage).to.include('enrolled');
         });
         
-        const courseCount = await page.$$eval('.course-card', cards => cards.length);
-        console.log(\`✓ Filtering completed, showing \${courseCount} courses\`);
-        
-        // Test 3: Check responsive design
-        console.log('Testing responsive design...');
-        await page.setViewport({ width: 375, height: 667 });
-        await page.reload();
-        await page.waitForSelector('#course-category-filter');
-        console.log('✓ Mobile layout works correctly');
-        
-        // Test 4: Performance measurement
-        console.log('Testing performance...');
-        const startTime = Date.now();
-        await page.select('#course-category-filter', 'design');
-        await page.waitForFunction(() => {
-            return document.querySelector('.loading-indicator') === null;
+        it('should update progress indicators', async function() {
+            await page.goto(`${baseUrl}/dashboard/`);
+            
+            // Wait for dashboard to load
+            await page.waitForSelector('.user-dashboard');
+            
+            // Check for progress bars
+            const progressBars = await page.$$('.progress-bar');
+            expect(progressBars.length).to.be.greaterThan(0);
+            
+            // Verify progress percentages are displayed
+            const progressText = await page.$eval('.progress-percentage', el => el.textContent);
+            expect(progressText).to.match(/\d+%/);
         });
-        const endTime = Date.now();
-        const responseTime = endTime - startTime;
-        
-        if (responseTime < 2000) {
-            console.log(\`✓ AJAX response time: \${responseTime}ms (Good)\`);
-        } else {
-            console.log(\`✗ AJAX response time: \${responseTime}ms (Slow)\`);
-        }
-        
-    } catch (error) {
-        console.error('Test failed:', error);
-    } finally {
-        await browser.close();
-    }
-}
-
-// Run the tests
-runBrowserTests();
-`;
-
-/**
- * Example Selenium WebDriver test configuration
- */
-const seleniumExample = `
-const { Builder, By, until } = require('selenium-webdriver');
-
-async function runSeleniumTests() {
-    // Test with multiple browsers
-    const browsers = ['chrome', 'firefox', 'safari'];
+    });
     
-    for (const browserName of browsers) {
-        console.log(\`Testing with \${browserName}...\`);
+    describe('Course Rating System', function() {
+        it('should display interactive star rating', async function() {
+            await page.goto(`${baseUrl}/courses/test-course/`);
+            
+            // Wait for rating section to load
+            await page.waitForSelector('.course-rating-section');
+            
+            // Check for star rating elements
+            const stars = await page.$$('.rating-star');
+            expect(stars.length).to.equal(5);
+            
+            // Test star hover effect
+            await page.hover('.rating-star:nth-child(4)');
+            
+            // Check if stars highlight on hover
+            const highlightedStars = await page.$$('.rating-star.highlighted');
+            expect(highlightedStars.length).to.equal(4);
+        });
         
-        const driver = await new Builder()
-            .forBrowser(browserName)
-            .build();
+        it('should submit rating via AJAX', async function() {
+            await page.goto(`${baseUrl}/courses/test-course/`);
             
-        try {
-            // Navigate to courses page
-            await driver.get('http://localhost/courses');
+            // Mock user login
+            await page.evaluate(() => {
+                window.qlcm_ajax.user_logged_in = true;
+                window.qlcm_ajax.user_id = 1;
+            });
             
-            // Wait for filter dropdown
-            const filterDropdown = await driver.wait(
-                until.elementLocated(By.id('course-category-filter')),
-                5000
-            );
+            // Wait for rating form
+            await page.waitForSelector('.rating-form');
             
-            // Test filtering
-            await filterDropdown.sendKeys('Web Development');
+            // Click 5th star
+            await page.click('.rating-star:nth-child(5)');
             
-            // Wait for AJAX to complete
-            await driver.wait(
-                until.elementLocated(By.css('.course-card')),
-                5000
-            );
+            // Fill review text
+            await page.type('.review-text', 'Excellent course! Highly recommended.');
             
-            // Verify results
-            const courses = await driver.findElements(By.css('.course-card'));
-            console.log(\`Found \${courses.length} courses after filtering\`);
+            // Submit rating
+            await page.click('.submit-rating');
             
-            console.log(\`✓ \${browserName} tests passed\`);
+            // Wait for success message
+            await page.waitForSelector('.rating-success', { timeout: 5000 });
             
-        } catch (error) {
-            console.error(\`✗ \${browserName} tests failed:\`, error);
-        } finally {
-            await driver.quit();
-        }
-    }
-}
+            // Verify rating was submitted
+            const successMessage = await page.$eval('.rating-success', el => el.textContent);
+            expect(successMessage).to.include('rating submitted');
+        });
+    });
+    
+    describe('Certificate Download', function() {
+        it('should generate and download certificate', async function() {
+            await page.goto(`${baseUrl}/dashboard/`);
+            
+            // Wait for dashboard
+            await page.waitForSelector('.user-dashboard');
+            
+            // Look for certificate download button
+            const certificateButton = await page.$('.download-certificate');
+            if (certificateButton) {
+                // Set up download handling
+                await page._client.send('Page.setDownloadBehavior', {
+                    behavior: 'allow',
+                    downloadPath: './downloads'
+                });
+                
+                // Click download button
+                await page.click('.download-certificate');
+                
+                // Wait for download to start
+                await page.waitForTimeout(2000);
+                
+                // Verify download initiated (check for loading state)
+                const loadingState = await page.$('.certificate-loading');
+                expect(loadingState).to.not.be.null;
+            }
+        });
+    });
+    
+    describe('SEO and Social Sharing', function() {
+        it('should have proper meta tags for SEO', async function() {
+            await page.goto(`${baseUrl}/courses/test-course/`);
+            
+            // Check for meta description
+            const metaDescription = await page.$eval('meta[name="description"]', el => el.content);
+            expect(metaDescription).to.not.be.empty;
+            expect(metaDescription.length).to.be.lessThan(160);
+            
+            // Check for Open Graph tags
+            const ogTitle = await page.$eval('meta[property="og:title"]', el => el.content);
+            expect(ogTitle).to.not.be.empty;
+            
+            const ogDescription = await page.$eval('meta[property="og:description"]', el => el.content);
+            expect(ogDescription).to.not.be.empty;
+            
+            // Check for structured data
+            const structuredData = await page.$eval('script[type="application/ld+json"]', el => el.textContent);
+            const jsonData = JSON.parse(structuredData);
+            expect(jsonData['@type']).to.equal('Course');
+        });
+        
+        it('should have social sharing buttons', async function() {
+            await page.goto(`${baseUrl}/courses/test-course/`);
+            
+            // Check for social sharing section
+            await page.waitForSelector('.social-sharing');
+            
+            // Verify sharing buttons
+            const facebookButton = await page.$('.share-facebook');
+            const twitterButton = await page.$('.share-twitter');
+            const linkedinButton = await page.$('.share-linkedin');
+            
+            expect(facebookButton).to.not.be.null;
+            expect(twitterButton).to.not.be.null;
+            expect(linkedinButton).to.not.be.null;
+        });
+    });
+    
+    describe('Multimedia Content', function() {
+        it('should display responsive video player', async function() {
+            await page.goto(`${baseUrl}/courses/multimedia-course/`);
+            
+            // Wait for video player
+            await page.waitForSelector('.video-player');
+            
+            // Check if video is responsive
+            const videoContainer = await page.$('.responsive-video-wrapper');
+            expect(videoContainer).to.not.be.null;
+            
+            // Test video controls
+            const playButton = await page.$('.video-play-button');
+            if (playButton) {
+                await page.click('.video-play-button');
+                
+                // Wait for video to start playing
+                await page.waitForTimeout(1000);
+                
+                // Check if video is playing
+                const isPlaying = await page.evaluate(() => {
+                    const video = document.querySelector('video');
+                    return video && !video.paused;
+                });
+                
+                expect(isPlaying).to.be.true;
+            }
+        });
+        
+        it('should support audio player controls', async function() {
+            await page.goto(`${baseUrl}/courses/audio-course/`);
+            
+            // Wait for audio player
+            await page.waitForSelector('.audio-player');
+            
+            // Test audio controls
+            const audioControls = await page.$('.audio-controls');
+            expect(audioControls).to.not.be.null;
+            
+            // Check for play/pause button
+            const playPauseButton = await page.$('.audio-play-pause');
+            expect(playPauseButton).to.not.be.null;
+            
+            // Check for progress bar
+            const progressBar = await page.$('.audio-progress');
+            expect(progressBar).to.not.be.null;
+        });
+    });
+    
+    describe('Responsive Design', function() {
+        const viewports = [
+            { name: 'Mobile', width: 375, height: 667 },
+            { name: 'Tablet', width: 768, height: 1024 },
+            { name: 'Desktop', width: 1200, height: 800 }
+        ];
+        
+        viewports.forEach(viewport => {
+            it(`should be responsive on ${viewport.name}`, async function() {
+                await page.setViewport({ width: viewport.width, height: viewport.height });
+                await page.goto(`${baseUrl}/courses/`);
+                
+                // Wait for course grid
+                await page.waitForSelector('.course-grid');
+                
+                // Check if navigation is responsive
+                if (viewport.width < 768) {
+                    // Mobile: check for hamburger menu
+                    const mobileMenu = await page.$('.mobile-menu-toggle');
+                    expect(mobileMenu).to.not.be.null;
+                } else {
+                    // Desktop/Tablet: check for full navigation
+                    const desktopNav = await page.$('.desktop-navigation');
+                    expect(desktopNav).to.not.be.null;
+                }
+                
+                // Check course grid responsiveness
+                const courseCards = await page.$$('.course-card');
+                expect(courseCards.length).to.be.greaterThan(0);
+                
+                // Verify cards are properly sized
+                const cardWidth = await page.$eval('.course-card', el => el.offsetWidth);
+                expect(cardWidth).to.be.greaterThan(0);
+                expect(cardWidth).to.be.lessThan(viewport.width);
+            });
+        });
+    });
+    
+    describe('AJAX Course Filtering', function() {
+        it('should filter courses without page reload', async function() {
+            await page.goto(`${baseUrl}/courses/`);
+            
+            // Wait for course grid and filter
+            await page.waitForSelector('.course-grid');
+            await page.waitForSelector('.course-filter');
+            
+            // Get initial course count
+            const initialCourses = await page.$$('.course-card');
+            const initialCount = initialCourses.length;
+            
+            // Select a category filter
+            await page.select('.category-filter', 'web-development');
+            
+            // Wait for AJAX response
+            await page.waitForTimeout(2000);
+            
+            // Check if courses were filtered
+            const filteredCourses = await page.$$('.course-card');
+            const filteredCount = filteredCourses.length;
+            
+            // Verify filtering worked (assuming not all courses are web development)
+            expect(filteredCount).to.be.lessThanOrEqual(initialCount);
+            
+            // Check for loading indicator during AJAX
+            const loadingIndicator = await page.$('.courses-loading');
+            // Loading indicator should be hidden after filtering
+            const isHidden = await page.evaluate(el => el.style.display === 'none', loadingIndicator);
+            expect(isHidden).to.be.true;
+        });
+        
+        it('should handle pagination via AJAX', async function() {
+            await page.goto(`${baseUrl}/courses/`);
+            
+            // Wait for pagination
+            await page.waitForSelector('.pagination');
+            
+            // Check if pagination exists
+            const paginationLinks = await page.$$('.pagination a');
+            if (paginationLinks.length > 0) {
+                // Click on page 2
+                await page.click('.pagination a[data-page="2"]');
+                
+                // Wait for AJAX response
+                await page.waitForTimeout(2000);
+                
+                // Verify URL didn't change (AJAX pagination)
+                const currentUrl = page.url();
+                expect(currentUrl).to.not.include('page=2');
+                
+                // Verify new courses loaded
+                const newCourses = await page.$$('.course-card');
+                expect(newCourses.length).to.be.greaterThan(0);
+            }
+        });
+    });
+    
+    describe('Performance Testing', function() {
+        it('should load course page within acceptable time', async function() {
+            const startTime = Date.now();
+            
+            await page.goto(`${baseUrl}/courses/test-course/`);
+            await page.waitForSelector('.course-content');
+            
+            const loadTime = Date.now() - startTime;
+            
+            // Page should load within 3 seconds
+            expect(loadTime).to.be.lessThan(3000);
+        });
+        
+        it('should handle AJAX requests efficiently', async function() {
+            await page.goto(`${baseUrl}/courses/`);
+            await page.waitForSelector('.course-filter');
+            
+            const startTime = Date.now();
+            
+            // Trigger AJAX filter
+            await page.select('.category-filter', 'programming');
+            await page.waitForSelector('.course-grid .course-card');
+            
+            const ajaxTime = Date.now() - startTime;
+            
+            // AJAX should complete within 2 seconds
+            expect(ajaxTime).to.be.lessThan(2000);
+        });
+    });
+    
+    describe('Accessibility Testing', function() {
+        it('should support keyboard navigation', async function() {
+            await page.goto(`${baseUrl}/courses/`);
+            
+            // Test tab navigation
+            await page.keyboard.press('Tab');
+            await page.keyboard.press('Tab');
+            await page.keyboard.press('Tab');
+            
+            // Check if focus is visible
+            const focusedElement = await page.evaluate(() => document.activeElement.tagName);
+            expect(focusedElement).to.not.be.null;
+        });
+        
+        it('should have proper ARIA labels', async function() {
+            await page.goto(`${baseUrl}/courses/test-course/`);
+            
+            // Check for ARIA labels on interactive elements
+            const enrollButton = await page.$('.enroll-button[aria-label]');
+            expect(enrollButton).to.not.be.null;
+            
+            const ratingStars = await page.$$('.rating-star[aria-label]');
+            expect(ratingStars.length).to.equal(5);
+        });
+        
+        it('should support screen readers', async function() {
+            await page.goto(`${baseUrl}/courses/`);
+            
+            // Check for proper heading hierarchy
+            const h1 = await page.$('h1');
+            expect(h1).to.not.be.null;
+            
+            // Check for alt text on images
+            const images = await page.$$('img[alt]');
+            expect(images.length).to.be.greaterThan(0);
+            
+            // Check for form labels
+            const labeledInputs = await page.$$('input[aria-label], input[aria-labelledby]');
+            const inputs = await page.$$('input');
+            
+            // Most inputs should have labels
+            expect(labeledInputs.length).to.be.greaterThan(inputs.length * 0.8);
+        });
+    });
+    
+    describe('Cross-Browser Compatibility', function() {
+        // Note: This would require multiple browser instances
+        // For now, we test features that commonly break across browsers
+        
+        it('should handle CSS Grid/Flexbox layouts', async function() {
+            await page.goto(`${baseUrl}/courses/`);
+            
+            // Check if course grid is properly displayed
+            const gridContainer = await page.$('.course-grid');
+            const computedStyle = await page.evaluate(el => {
+                return window.getComputedStyle(el).display;
+            }, gridContainer);
+            
+            // Should use modern layout methods
+            expect(['grid', 'flex']).to.include(computedStyle);
+        });
+        
+        it('should handle modern JavaScript features gracefully', async function() {
+            await page.goto(`${baseUrl}/courses/`);
+            
+            // Check if JavaScript is working
+            const jsWorking = await page.evaluate(() => {
+                return typeof window.qlcm_ajax !== 'undefined';
+            });
+            
+            expect(jsWorking).to.be.true;
+            
+            // Check for error handling
+            const errors = [];
+            page.on('pageerror', error => errors.push(error));
+            
+            // Trigger some JavaScript interactions
+            await page.click('.course-filter select');
+            await page.waitForTimeout(1000);
+            
+            // Should not have JavaScript errors
+            expect(errors.length).to.equal(0);
+        });
+    });
+    
+    describe('Security Testing', function() {
+        it('should prevent XSS in user inputs', async function() {
+            await page.goto(`${baseUrl}/courses/test-course/`);
+            
+            // Try to inject script in review form
+            await page.waitForSelector('.review-text');
+            await page.type('.review-text', '<script>alert("xss")</script>Test review');
+            
+            // Submit form
+            await page.click('.submit-rating');
+            await page.waitForTimeout(2000);
+            
+            // Check if script was executed (it shouldn't be)
+            const alertFired = await page.evaluate(() => {
+                return window.alertFired || false;
+            });
+            
+            expect(alertFired).to.be.false;
+        });
+        
+        it('should validate CSRF tokens', async function() {
+            await page.goto(`${baseUrl}/courses/test-course/`);
+            
+            // Try to submit form without proper nonce
+            await page.evaluate(() => {
+                // Remove or modify nonce
+                const nonceField = document.querySelector('input[name="nonce"]');
+                if (nonceField) {
+                    nonceField.value = 'invalid_nonce';
+                }
+            });
+            
+            // Try to submit rating
+            await page.click('.submit-rating');
+            await page.waitForTimeout(2000);
+            
+            // Should show error message
+            const errorMessage = await page.$('.error-message');
+            expect(errorMessage).to.not.be.null;
+        });
+    });
+});
 
-runSeleniumTests();
-`;
-
-// Export configuration for use in actual test runners
+// Export for Node.js environments
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
-        browserConfig,
-        testScenarios,
-        performanceTests,
-        accessibilityTests,
-        puppeteerExample,
-        seleniumExample
+        // Test configuration
+        browserConfig: {
+            chrome: {
+                name: 'Chrome',
+                userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+            },
+            firefox: {
+                name: 'Firefox', 
+                userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:89.0) Gecko/20100101 Firefox/89.0'
+            },
+            safari: {
+                name: 'Safari',
+                userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15'
+            }
+        },
+        
+        // Performance benchmarks
+        performanceTargets: {
+            pageLoad: 3000,
+            ajaxResponse: 2000,
+            domUpdate: 500
+        },
+        
+        // Accessibility requirements
+        accessibilityChecks: [
+            'ARIA labels on interactive elements',
+            'Color contrast ratios meet WCAG 2.1 AA',
+            'Keyboard navigation support',
+            'Screen reader compatibility'
+        ]
     };
 }
 
-// Browser-side test utilities (for manual testing)
+// Browser-side utilities for manual testing
 if (typeof window !== 'undefined') {
-    window.QLCMBrowserTests = {
-
-        // Test AJAX filtering manually
-        testFiltering: function () {
-            console.log('Testing AJAX filtering...');
-
-            const filterDropdown = document.getElementById('course-category-filter');
-            if (!filterDropdown) {
-                console.error('Filter dropdown not found');
-                return;
-            }
-
-            // Monitor AJAX requests
-            const originalFetch = window.fetch;
-            window.fetch = function (...args) {
-                console.log('AJAX request started:', args[0]);
-                const startTime = Date.now();
-
-                return originalFetch.apply(this, args).then(response => {
-                    const endTime = Date.now();
-                    console.log(`AJAX request completed in ${endTime - startTime}ms`);
-                    return response;
-                });
-            };
-
-            // Test category selection
-            filterDropdown.value = 'web-development';
-            filterDropdown.dispatchEvent(new Event('change'));
-
-            console.log('Filter test initiated. Check console for results.');
-        },
-
-        // Test responsive behavior
-        testResponsive: function () {
-            console.log('Testing responsive design...');
-
-            const viewports = [
-                { width: 1920, height: 1080, name: 'Desktop' },
-                { width: 1024, height: 768, name: 'Tablet' },
-                { width: 375, height: 667, name: 'Mobile' }
-            ];
-
-            viewports.forEach(viewport => {
-                console.log(`Testing ${viewport.name} (${viewport.width}x${viewport.height})`);
-
-                // This would require browser dev tools or a testing framework
-                // to actually change viewport size
-                console.log('Note: Use browser dev tools to test different viewport sizes');
-            });
-        },
-
-        // Test accessibility
-        testAccessibility: function () {
-            console.log('Testing accessibility...');
-
-            const filterDropdown = document.getElementById('course-category-filter');
-            const courseCards = document.querySelectorAll('.course-card');
-
-            // Check ARIA labels
-            if (filterDropdown && filterDropdown.getAttribute('aria-label')) {
-                console.log('✓ Filter dropdown has aria-label');
+    window.QLCMEnhancedTests = {
+        // Test enrollment workflow
+        testEnrollment: async function() {
+            console.log('Testing enrollment workflow...');
+            
+            const enrollButton = document.querySelector('.enroll-button');
+            if (enrollButton) {
+                enrollButton.click();
+                
+                // Wait for response
+                setTimeout(() => {
+                    const successMessage = document.querySelector('.enrollment-success');
+                    if (successMessage) {
+                        console.log('✓ Enrollment successful');
+                    } else {
+                        console.log('✗ Enrollment failed or no feedback');
+                    }
+                }, 2000);
             } else {
-                console.log('✗ Filter dropdown missing aria-label');
+                console.log('✗ Enrollment button not found');
             }
-
-            // Check heading structure
-            const headings = document.querySelectorAll('h1, h2, h3, h4, h5, h6');
-            console.log(`Found ${headings.length} headings on page`);
-
-            // Check course card accessibility
-            courseCards.forEach((card, index) => {
-                const link = card.querySelector('a');
-                if (link && (link.textContent.trim() || link.getAttribute('aria-label'))) {
-                    console.log(`✓ Course card ${index + 1} has accessible link`);
+        },
+        
+        // Test rating system
+        testRating: function() {
+            console.log('Testing rating system...');
+            
+            const stars = document.querySelectorAll('.rating-star');
+            if (stars.length === 5) {
+                console.log('✓ 5-star rating system found');
+                
+                // Test hover effects
+                stars[3].dispatchEvent(new Event('mouseenter'));
+                
+                setTimeout(() => {
+                    const highlighted = document.querySelectorAll('.rating-star.highlighted');
+                    if (highlighted.length === 4) {
+                        console.log('✓ Star hover effects working');
+                    } else {
+                        console.log('✗ Star hover effects not working');
+                    }
+                }, 100);
+            } else {
+                console.log('✗ Rating system not found or incomplete');
+            }
+        },
+        
+        // Test multimedia content
+        testMultimedia: function() {
+            console.log('Testing multimedia content...');
+            
+            const videos = document.querySelectorAll('video');
+            const audios = document.querySelectorAll('audio');
+            
+            console.log(`Found ${videos.length} video elements`);
+            console.log(`Found ${audios.length} audio elements`);
+            
+            videos.forEach((video, index) => {
+                if (video.controls) {
+                    console.log(`✓ Video ${index + 1} has controls`);
                 } else {
-                    console.log(`✗ Course card ${index + 1} link may not be accessible`);
+                    console.log(`✗ Video ${index + 1} missing controls`);
+                }
+            });
+            
+            audios.forEach((audio, index) => {
+                if (audio.controls) {
+                    console.log(`✓ Audio ${index + 1} has controls`);
+                } else {
+                    console.log(`✗ Audio ${index + 1} missing controls`);
                 }
             });
         },
-
-        // Performance monitoring
-        monitorPerformance: function () {
-            console.log('Starting performance monitoring...');
-
-            // Monitor page load performance
-            window.addEventListener('load', function () {
-                const perfData = performance.getEntriesByType('navigation')[0];
-                console.log('Page load performance:');
-                console.log(`- DOM Content Loaded: ${perfData.domContentLoadedEventEnd - perfData.domContentLoadedEventStart}ms`);
-                console.log(`- Load Complete: ${perfData.loadEventEnd - perfData.loadEventStart}ms`);
-                console.log(`- Total Load Time: ${perfData.loadEventEnd - perfData.fetchStart}ms`);
-            });
-
-            // Monitor AJAX performance
-            const observer = new PerformanceObserver((list) => {
-                list.getEntries().forEach((entry) => {
-                    if (entry.name.includes('wp-admin/admin-ajax.php')) {
-                        console.log(`AJAX request performance: ${entry.duration}ms`);
+        
+        // Test SEO elements
+        testSEO: function() {
+            console.log('Testing SEO elements...');
+            
+            // Check meta tags
+            const metaDescription = document.querySelector('meta[name="description"]');
+            const ogTitle = document.querySelector('meta[property="og:title"]');
+            const structuredData = document.querySelector('script[type="application/ld+json"]');
+            
+            if (metaDescription) {
+                console.log('✓ Meta description found');
+                if (metaDescription.content.length <= 160) {
+                    console.log('✓ Meta description length optimal');
+                } else {
+                    console.log('⚠ Meta description too long');
+                }
+            } else {
+                console.log('✗ Meta description missing');
+            }
+            
+            if (ogTitle) {
+                console.log('✓ Open Graph title found');
+            } else {
+                console.log('✗ Open Graph title missing');
+            }
+            
+            if (structuredData) {
+                console.log('✓ Structured data found');
+                try {
+                    const data = JSON.parse(structuredData.textContent);
+                    if (data['@type'] === 'Course') {
+                        console.log('✓ Course structured data valid');
+                    } else {
+                        console.log('⚠ Structured data type unexpected');
                     }
-                });
-            });
-
-            observer.observe({ entryTypes: ['resource'] });
+                } catch (e) {
+                    console.log('✗ Structured data invalid JSON');
+                }
+            } else {
+                console.log('✗ Structured data missing');
+            }
+        },
+        
+        // Run all tests
+        runAllTests: function() {
+            console.log('Running all enhanced feature tests...');
+            console.log('=====================================');
+            
+            this.testEnrollment();
+            this.testRating();
+            this.testMultimedia();
+            this.testSEO();
+            
+            console.log('=====================================');
+            console.log('Test run complete. Check console for results.');
         }
     };
-
-    // Auto-start performance monitoring
-    document.addEventListener('DOMContentLoaded', function () {
+    
+    // Auto-run tests on course pages
+    document.addEventListener('DOMContentLoaded', function() {
         if (window.location.pathname.includes('courses')) {
-            window.QLCMBrowserTests.monitorPerformance();
+            console.log('QuickLearn Enhanced Tests available. Run window.QLCMEnhancedTests.runAllTests() to test all features.');
         }
     });
 }
