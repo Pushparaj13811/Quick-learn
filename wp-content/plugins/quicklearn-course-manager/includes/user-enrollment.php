@@ -458,6 +458,9 @@ class QLCM_User_Enrollment {
                 array('%s', '%s'),
                 array('%d')
             );
+            
+            // Trigger course completion action for certificate generation
+            do_action('qlcm_course_completed', $user_id, $course_id);
         }
         
         if ($result !== false) {
@@ -596,6 +599,9 @@ class QLCM_User_Enrollment {
             echo '</div>'; // .qlcm-course-grid
             echo '</div>'; // .qlcm-enrolled-courses
         }
+        
+        // Add certificates section
+        do_action('qlcm_user_dashboard_after_courses');
         
         echo '</div>'; // .qlcm-user-dashboard
         
