@@ -66,8 +66,8 @@
             }
         });
 
-        // Handle window resize
-        window.addEventListener('resize', function() {
+        // Handle window resize with debounce
+        const handleResize = debounce(function() {
             if (window.innerWidth > 768) {
                 navigation.classList.remove('active');
                 menuToggle.setAttribute('aria-expanded', 'false');
@@ -77,7 +77,9 @@
                     screenReaderText.textContent = 'Primary Menu';
                 }
             }
-        });
+        }, 250);
+        
+        window.addEventListener('resize', handleResize);
     }
 
     /**
