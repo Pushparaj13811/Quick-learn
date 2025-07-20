@@ -94,6 +94,16 @@ get_header(); ?>
                 
                 <?php do_action('quicklearn_after_course_content'); ?>
 
+                <!-- Course Discussion Forum -->
+                <section class="course-forum-section">
+                    <?php echo do_shortcode('[course_forum course_id="' . get_the_ID() . '"]'); ?>
+                </section>
+
+                <!-- Course Q&A Section -->
+                <section class="course-qa-section">
+                    <?php echo do_shortcode('[course_qa course_id="' . get_the_ID() . '"]'); ?>
+                </section>
+
                 <!-- Course Footer -->
                 <footer class="course-footer">
                     <?php if ($course_categories && !is_wp_error($course_categories)) : ?>
