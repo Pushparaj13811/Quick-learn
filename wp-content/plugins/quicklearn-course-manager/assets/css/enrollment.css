@@ -1,0 +1,451 @@
+/**
+ * User Enrollment and Progress Tracking Styles
+ * QuickLearn Course Manager Plugin
+ */
+
+/* Enrollment Container */
+.qlcm-enrollment-container {
+    margin: 24px 0;
+    padding: 20px;
+    background: #f8f9fa;
+    border: 1px solid #e1e5e9;
+    border-radius: 8px;
+    text-align: center;
+}
+
+/* Enrollment Status */
+.qlcm-enrollment-status {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.qlcm-enrollment-status .dashicons {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+}
+
+.qlcm-completed {
+    color: #28a745;
+    font-weight: 600;
+}
+
+.qlcm-in-progress {
+    color: #007cba;
+    font-weight: 600;
+}
+
+/* Progress Bar */
+.qlcm-progress-bar {
+    width: 100%;
+    max-width: 300px;
+    height: 8px;
+    background: #e1e5e9;
+    border-radius: 4px;
+    overflow: hidden;
+    margin: 0 auto 8px;
+}
+
+.qlcm-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #007cba, #28a745);
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+.qlcm-progress-text {
+    font-size: 14px;
+    color: #666;
+    font-weight: 600;
+}
+
+/* Buttons */
+.qlcm-button {
+    display: inline-block;
+    padding: 12px 24px;
+    background: #007cba;
+    color: #fff;
+    text-decoration: none;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin: 8px;
+}
+
+.qlcm-button:hover {
+    background: #005a87;
+    color: #fff;
+    text-decoration: none;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 124, 186, 0.3);
+}
+
+.qlcm-button:active {
+    transform: translateY(0);
+}
+
+.qlcm-button:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.qlcm-enroll-button {
+    background: #28a745;
+}
+
+.qlcm-enroll-button:hover {
+    background: #218838;
+}
+
+.qlcm-continue-button {
+    background: #007cba;
+}
+
+.qlcm-continue-button:hover {
+    background: #005a87;
+}
+
+.qlcm-review-button {
+    background: #6c757d;
+}
+
+.qlcm-review-button:hover {
+    background: #545b62;
+}
+
+.qlcm-login-required {
+    background: #ffc107;
+    color: #212529;
+}
+
+.qlcm-login-required:hover {
+    background: #e0a800;
+    color: #212529;
+}
+
+/* User Dashboard */
+.qlcm-user-dashboard {
+    margin: 24px 0;
+}
+
+.qlcm-user-dashboard h2 {
+    margin: 0 0 24px 0;
+    font-size: 28px;
+    color: #333;
+    border-bottom: 3px solid #007cba;
+    padding-bottom: 12px;
+}
+
+/* No Courses Message */
+.qlcm-no-courses {
+    text-align: center;
+    padding: 48px 24px;
+    background: #f8f9fa;
+    border: 1px solid #e1e5e9;
+    border-radius: 8px;
+    color: #666;
+}
+
+.qlcm-no-courses p {
+    font-size: 18px;
+    margin: 0 0 24px 0;
+}
+
+/* Course Grid */
+.qlcm-course-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 24px;
+    margin-top: 24px;
+}
+
+/* Course Card */
+.qlcm-course-card {
+    background: #fff;
+    border: 1px solid #e1e5e9;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.qlcm-course-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.qlcm-course-image {
+    position: relative;
+    overflow: hidden;
+}
+
+.qlcm-course-image img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    transition: transform 0.2s ease;
+}
+
+.qlcm-course-card:hover .qlcm-course-image img {
+    transform: scale(1.05);
+}
+
+.qlcm-course-content {
+    padding: 20px;
+}
+
+.qlcm-course-title {
+    margin: 0 0 12px 0;
+    font-size: 18px;
+    line-height: 1.4;
+}
+
+.qlcm-course-title a {
+    color: #333;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.qlcm-course-title a:hover {
+    color: #007cba;
+    text-decoration: none;
+}
+
+/* Course Status */
+.qlcm-course-status {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid #e1e5e9;
+}
+
+.qlcm-status-completed,
+.qlcm-status-active {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.qlcm-status-completed {
+    color: #28a745;
+}
+
+.qlcm-status-active {
+    color: #007cba;
+}
+
+.qlcm-status-completed .dashicons,
+.qlcm-status-active .dashicons {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+}
+
+/* Login Required Message */
+.qlcm-login-required {
+    text-align: center;
+    padding: 32px;
+    background: #fff3cd;
+    border: 1px solid #ffeaa7;
+    border-radius: 8px;
+    color: #856404;
+}
+
+.qlcm-login-required p {
+    margin: 0 0 16px 0;
+    font-size: 16px;
+}
+
+/* Loading States */
+.qlcm-loading {
+    position: relative;
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.qlcm-loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border: 2px solid #f3f3f3;
+    border-top: 2px solid #007cba;
+    border-radius: 50%;
+    animation: qlcm-spin 1s linear infinite;
+    z-index: 10;
+}
+
+@keyframes qlcm-spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Success/Error Messages */
+.qlcm-message {
+    padding: 12px 16px;
+    border-radius: 6px;
+    margin: 16px 0;
+    font-weight: 600;
+}
+
+.qlcm-message-success {
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.qlcm-message-error {
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+/* Progress in Course Cards */
+.qlcm-course-card .qlcm-progress-bar {
+    margin: 12px 0 8px 0;
+    max-width: none;
+}
+
+.qlcm-course-card .qlcm-progress-text {
+    font-size: 12px;
+    text-align: center;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .qlcm-course-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+    
+    .qlcm-enrollment-container {
+        padding: 16px;
+        margin: 16px 0;
+    }
+    
+    .qlcm-enrollment-status {
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .qlcm-progress-bar {
+        max-width: 250px;
+    }
+    
+    .qlcm-course-status {
+        flex-direction: column;
+        gap: 12px;
+        align-items: stretch;
+    }
+    
+    .qlcm-button {
+        width: 100%;
+        margin: 4px 0;
+    }
+    
+    .qlcm-user-dashboard h2 {
+        font-size: 24px;
+    }
+}
+
+@media (max-width: 480px) {
+    .qlcm-course-card {
+        margin: 0 -16px;
+        border-radius: 0;
+        border-left: none;
+        border-right: none;
+    }
+    
+    .qlcm-course-content {
+        padding: 16px;
+    }
+    
+    .qlcm-enrollment-container {
+        margin: 16px -16px;
+        border-radius: 0;
+        border-left: none;
+        border-right: none;
+    }
+    
+    .qlcm-no-courses {
+        margin: 0 -16px;
+        border-radius: 0;
+        border-left: none;
+        border-right: none;
+    }
+}
+
+/* Admin Styles */
+.qlcm-enrollment-stats {
+    padding: 12px;
+    background: #f9f9f9;
+    border-radius: 4px;
+}
+
+.qlcm-enrollment-stats p {
+    margin: 8px 0;
+}
+
+.qlcm-enrollment-stats strong {
+    color: #333;
+}
+
+/* User Profile Styles */
+.qlcm-progress-bar {
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 8px;
+}
+
+.qlcm-progress-text {
+    vertical-align: middle;
+}
+
+/* Accessibility Improvements */
+.qlcm-button:focus {
+    outline: 2px solid #007cba;
+    outline-offset: 2px;
+}
+
+.qlcm-progress-bar[aria-label] {
+    position: relative;
+}
+
+.qlcm-progress-bar[aria-label]::after {
+    content: attr(aria-label);
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+}
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+    .qlcm-progress-fill {
+        background: #000;
+    }
+    
+    .qlcm-course-card {
+        border-width: 2px;
+    }
+    
+    .qlcm-button {
+        border: 2px solid currentColor;
+    }
+}
