@@ -1,0 +1,803 @@
+/**
+ * Multimedia Frontend Styles for QuickLearn Course Manager
+ */
+
+/* Multimedia Wrapper */
+.qlcm-multimedia-wrapper {
+    margin-bottom: 30px;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+}
+
+/* Video Container */
+.qlcm-video-content {
+    margin-bottom: 25px;
+}
+
+.qlcm-video-content:last-child {
+    margin-bottom: 0;
+}
+
+.qlcm-video-container {
+    position: relative;
+    margin-bottom: 15px;
+    background: #000;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive Video Wrapper */
+.qlcm-video-responsive {
+    position: relative;
+    padding-bottom: 56.25%; /* 16:9 aspect ratio */
+    height: 0;
+    overflow: hidden;
+}
+
+.qlcm-video-responsive iframe,
+.qlcm-video-responsive video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+/* Direct Upload Video */
+.qlcm-upload-container video {
+    width: 100%;
+    height: auto;
+    max-height: 500px;
+    background: #000;
+}
+
+/* Video Controls Styling */
+video::-webkit-media-controls-panel {
+    background-color: rgba(0, 0, 0, 0.8);
+}
+
+video::-webkit-media-controls-play-button,
+video::-webkit-media-controls-volume-slider,
+video::-webkit-media-controls-timeline {
+    filter: invert(1);
+}
+
+/* Audio Container */
+.qlcm-audio-content {
+    margin-bottom: 25px;
+}
+
+.qlcm-audio-content:last-child {
+    margin-bottom: 0;
+}
+
+.qlcm-audio-container {
+    background: #fff;
+    border-radius: 8px;
+    padding: 20px;
+    border: 1px solid #e9ecef;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.qlcm-audio-item {
+    margin-bottom: 20px;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 6px;
+    border: 1px solid #e9ecef;
+}
+
+.qlcm-audio-item:last-child {
+    margin-bottom: 0;
+}
+
+.qlcm-audio-title {
+    margin: 0 0 15px 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #212529;
+}
+
+.qlcm-audio-item audio {
+    width: 100%;
+    height: 40px;
+    background: #fff;
+    border-radius: 4px;
+    border: 1px solid #dee2e6;
+}
+
+/* Audio Controls Styling */
+audio::-webkit-media-controls-panel {
+    background-color: #fff;
+    border-radius: 4px;
+}
+
+audio::-webkit-media-controls-play-button {
+    background-color: #007cba;
+    border-radius: 50%;
+}
+
+audio::-webkit-media-controls-current-time-display,
+audio::-webkit-media-controls-time-remaining-display {
+    color: #495057;
+    font-size: 12px;
+}
+
+audio::-webkit-media-controls-timeline {
+    background-color: #e9ecef;
+    border-radius: 2px;
+}
+
+audio::-webkit-media-controls-volume-slider {
+    background-color: #e9ecef;
+    border-radius: 2px;
+}
+
+/* Accessibility Improvements */
+.qlcm-video-container:focus-within,
+.qlcm-audio-item:focus-within {
+    outline: 2px solid #007cba;
+    outline-offset: 2px;
+}
+
+/* Loading States */
+.qlcm-video-container.loading::before,
+.qlcm-audio-item.loading::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 40px;
+    height: 40px;
+    margin: -20px 0 0 -20px;
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #007cba;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    z-index: 10;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Error States */
+.qlcm-video-error,
+.qlcm-audio-error {
+    padding: 20px;
+    text-align: center;
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+    border-radius: 6px;
+    margin-bottom: 15px;
+}
+
+.qlcm-video-error::before,
+.qlcm-audio-error::before {
+    content: '⚠️';
+    display: block;
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+/* Responsive Design */
+@media screen and (max-width: 768px) {
+    .qlcm-multimedia-wrapper {
+        padding: 15px;
+        margin-bottom: 20px;
+    }
+    
+    .qlcm-video-content,
+    .qlcm-audio-content {
+        margin-bottom: 20px;
+    }
+    
+    .qlcm-audio-container {
+        padding: 15px;
+    }
+    
+    .qlcm-audio-item {
+        padding: 12px;
+        margin-bottom: 15px;
+    }
+    
+    .qlcm-audio-title {
+        font-size: 14px;
+        margin-bottom: 12px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .qlcm-multimedia-wrapper {
+        padding: 10px;
+        margin-bottom: 15px;
+    }
+    
+    .qlcm-audio-container {
+        padding: 10px;
+    }
+    
+    .qlcm-audio-item {
+        padding: 10px;
+        margin-bottom: 10px;
+    }
+    
+    .qlcm-audio-title {
+        font-size: 13px;
+        margin-bottom: 10px;
+    }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+    .qlcm-multimedia-wrapper {
+        background: #2d3748;
+        border-color: #4a5568;
+    }
+    
+    .qlcm-audio-container {
+        background: #1a202c;
+        border-color: #4a5568;
+    }
+    
+    .qlcm-audio-item {
+        background: #2d3748;
+        border-color: #4a5568;
+    }
+    
+    .qlcm-audio-title {
+        color: #e2e8f0;
+    }
+    
+    .qlcm-audio-item audio {
+        background: #1a202c;
+        border-color: #4a5568;
+    }
+}
+
+/* Print Styles */
+@media print {
+    .qlcm-multimedia-wrapper {
+        display: none;
+    }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+    .qlcm-video-container,
+    .qlcm-audio-container,
+    .qlcm-audio-item {
+        border-width: 2px;
+        border-color: #000;
+    }
+    
+    .qlcm-audio-title {
+        color: #000;
+        font-weight: bold;
+    }
+}
+
+/* Course Modules Frontend Styling */
+.qlcm-course-modules {
+    margin: 30px 0;
+    padding: 0;
+}
+
+.qlcm-course-modules h3 {
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #e9ecef;
+    color: #212529;
+    font-size: 24px;
+    font-weight: 700;
+}
+
+/* Module Styling */
+.qlcm-module {
+    margin-bottom: 30px;
+    background: #fff;
+    border: 1px solid #e9ecef;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.qlcm-module:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+    transform: translateY(-2px);
+}
+
+.qlcm-module.qlcm-module-completed {
+    border-color: #28a745;
+    background: linear-gradient(135deg, #f8fff9 0%, #ffffff 100%);
+}
+
+.qlcm-module-header {
+    padding: 20px 25px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-bottom: 1px solid #e9ecef;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.qlcm-module-header:hover {
+    background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%);
+}
+
+.qlcm-module-header h4 {
+    margin: 0 0 10px 0;
+    font-size: 20px;
+    font-weight: 600;
+    color: #212529;
+    line-height: 1.3;
+}
+
+.qlcm-module-meta {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+    margin-bottom: 15px;
+}
+
+.qlcm-free-badge {
+    background: linear-gradient(135deg, #28a745, #20c997);
+    color: #fff;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 4px rgba(40, 167, 69, 0.3);
+}
+
+.qlcm-duration,
+.qlcm-lesson-count {
+    color: #6c757d;
+    font-size: 14px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.qlcm-duration::before {
+    content: '🕒';
+    font-size: 12px;
+}
+
+.qlcm-lesson-count::before {
+    content: '📚';
+    font-size: 12px;
+}
+
+.qlcm-difficulty {
+    padding: 3px 10px;
+    border-radius: 15px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.qlcm-difficulty-beginner {
+    background: #d4edda;
+    color: #155724;
+}
+
+.qlcm-difficulty-intermediate {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.qlcm-difficulty-advanced {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+/* Progress Bar */
+.qlcm-progress-bar {
+    position: relative;
+    height: 8px;
+    background: #e9ecef;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-top: 15px;
+}
+
+.qlcm-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #007cba, #0056b3);
+    border-radius: 4px;
+    transition: width 0.6s ease;
+    position: relative;
+}
+
+.qlcm-progress-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+.qlcm-progress-text {
+    position: absolute;
+    top: -25px;
+    right: 0;
+    font-size: 12px;
+    color: #6c757d;
+    font-weight: 600;
+}
+
+/* Module Description */
+.qlcm-module-description {
+    padding: 20px 25px;
+    color: #495057;
+    line-height: 1.6;
+    border-bottom: 1px solid #f8f9fa;
+}
+
+.qlcm-module-description p:last-child {
+    margin-bottom: 0;
+}
+
+/* Lessons List */
+.qlcm-lessons-list {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+.qlcm-lesson {
+    border-bottom: 1px solid #f8f9fa;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.qlcm-lesson:last-child {
+    border-bottom: none;
+}
+
+.qlcm-lesson:hover {
+    background: #f8f9fa;
+}
+
+.qlcm-lesson.qlcm-lesson-active {
+    background: #e3f2fd;
+    border-left: 4px solid #007cba;
+}
+
+.qlcm-lesson.qlcm-lesson-completed {
+    background: #f8fff9;
+}
+
+.qlcm-lesson-header {
+    display: flex;
+    align-items: center;
+    padding: 15px 25px;
+    gap: 15px;
+}
+
+.qlcm-lesson-icon {
+    font-size: 18px;
+    color: #6c757d;
+    min-width: 20px;
+}
+
+.qlcm-lesson-title {
+    flex: 1;
+    font-size: 16px;
+    font-weight: 500;
+    color: #212529;
+    line-height: 1.4;
+}
+
+.qlcm-lesson-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.qlcm-lesson-meta .qlcm-duration {
+    font-size: 12px;
+}
+
+.qlcm-completed-badge {
+    color: #28a745;
+    font-size: 16px;
+}
+
+/* Lesson Content */
+.qlcm-lesson-content {
+    padding: 20px 25px;
+    background: #f8f9fa;
+    border-top: 1px solid #e9ecef;
+    display: none;
+}
+
+.qlcm-lesson-content.active {
+    display: block;
+}
+
+/* Lesson Type Icons */
+.dashicons-media-text { color: #6c757d; }
+.dashicons-video-alt3 { color: #dc3545; }
+.dashicons-media-audio { color: #6f42c1; }
+.dashicons-forms { color: #fd7e14; }
+.dashicons-portfolio { color: #20c997; }
+
+/* Mark Complete Button */
+.qlcm-mark-complete {
+    background: linear-gradient(135deg, #007cba, #0056b3);
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 25px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 15px;
+}
+
+.qlcm-mark-complete:hover {
+    background: linear-gradient(135deg, #0056b3, #004085);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 124, 186, 0.3);
+}
+
+.qlcm-mark-complete:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.qlcm-mark-complete.completed {
+    background: linear-gradient(135deg, #28a745, #20c997);
+}
+
+/* Completion Message */
+.qlcm-completion-message {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 15px 20px;
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+    border-radius: 8px;
+    margin-top: 15px;
+    font-weight: 600;
+    animation: slideInUp 0.5s ease;
+}
+
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.qlcm-completion-message .dashicons {
+    color: #28a745;
+    font-size: 18px;
+}
+
+/* Error Message */
+.qlcm-error-message {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: #dc3545;
+    color: #fff;
+    padding: 15px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    z-index: 9999;
+    box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+    animation: slideInRight 0.5s ease;
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Quiz Styling */
+.qlcm-quiz-form {
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+    margin-top: 15px;
+}
+
+.qlcm-quiz-question {
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #f8f9fa;
+}
+
+.qlcm-quiz-question:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+.qlcm-quiz-question h5 {
+    margin-bottom: 15px;
+    color: #212529;
+    font-weight: 600;
+}
+
+.qlcm-quiz-options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.qlcm-quiz-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 15px;
+    background: #f8f9fa;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.qlcm-quiz-option:hover {
+    background: #e9ecef;
+}
+
+.qlcm-quiz-option input[type="radio"] {
+    margin: 0;
+}
+
+.qlcm-quiz-results {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    margin-top: 20px;
+    border: 1px solid #e9ecef;
+}
+
+.qlcm-quiz-results h4 {
+    margin-top: 0;
+    color: #212529;
+}
+
+.qlcm-quiz-results .success {
+    color: #28a745;
+    font-weight: 600;
+}
+
+.qlcm-quiz-results .error {
+    color: #dc3545;
+    font-weight: 600;
+}
+
+/* Scheduled Content */
+.qlcm-module-scheduled {
+    padding: 20px 25px;
+    background: #fff3cd;
+    border: 1px solid #ffeaa7;
+    margin: 20px 25px;
+    border-radius: 8px;
+}
+
+.qlcm-module-scheduled p {
+    margin: 0;
+    color: #856404;
+    font-weight: 500;
+    text-align: center;
+}
+
+/* Responsive Design for Modules */
+@media screen and (max-width: 768px) {
+    .qlcm-course-modules h3 {
+        font-size: 20px;
+        margin-bottom: 20px;
+    }
+    
+    .qlcm-module {
+        margin-bottom: 20px;
+    }
+    
+    .qlcm-module-header {
+        padding: 15px 20px;
+    }
+    
+    .qlcm-module-header h4 {
+        font-size: 18px;
+    }
+    
+    .qlcm-module-meta {
+        gap: 10px;
+    }
+    
+    .qlcm-lesson-header {
+        padding: 12px 20px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    
+    .qlcm-lesson-meta {
+        align-self: flex-end;
+    }
+    
+    .qlcm-lesson-content,
+    .qlcm-module-description {
+        padding: 15px 20px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .qlcm-module-header,
+    .qlcm-lesson-header,
+    .qlcm-lesson-content,
+    .qlcm-module-description {
+        padding: 12px 15px;
+    }
+    
+    .qlcm-module-header h4 {
+        font-size: 16px;
+    }
+    
+    .qlcm-lesson-title {
+        font-size: 14px;
+    }
+    
+    .qlcm-error-message {
+        right: 10px;
+        left: 10px;
+        top: 10px;
+    }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+    .qlcm-video-container.loading::before {
+        animation: none;
+    }
+    
+    .qlcm-progress-fill::after {
+        animation: none;
+    }
+    
+    .qlcm-completion-message,
+    .qlcm-error-message {
+        animation: none;
+    }
+    
+    * {
+        transition: none !important;
+    }
+}
