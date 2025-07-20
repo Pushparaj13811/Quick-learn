@@ -1,0 +1,415 @@
+/**
+ * Course Ratings and Reviews Styles
+ * QuickLearn Course Manager Plugin
+ */
+
+/* Rating Stars */
+.qlcm-stars {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    font-size: 18px;
+    line-height: 1;
+}
+
+.qlcm-stars-small {
+    font-size: 14px;
+}
+
+.qlcm-star {
+    color: #ddd;
+    transition: color 0.2s ease;
+}
+
+.qlcm-star-full {
+    color: #ffc107;
+}
+
+.qlcm-star-half {
+    background: linear-gradient(90deg, #ffc107 50%, #ddd 50%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.qlcm-star-empty {
+    color: #ddd;
+}
+
+/* Course Rating Summary */
+.qlcm-course-rating-summary {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 16px 0;
+    padding: 12px;
+    background: #f8f9fa;
+    border-radius: 6px;
+    border-left: 4px solid #ffc107;
+}
+
+.qlcm-rating-stats {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.qlcm-rating-average {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+}
+
+.qlcm-rating-count {
+    color: #666;
+    font-size: 14px;
+}
+
+/* Course Card Rating */
+.qlcm-card-rating {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 8px;
+}
+
+.qlcm-rating-text {
+    font-size: 12px;
+    color: #666;
+}
+
+/* Reviews Section */
+.qlcm-course-reviews {
+    margin: 32px 0;
+    padding: 24px;
+    background: #fff;
+    border: 1px solid #e1e5e9;
+    border-radius: 8px;
+}
+
+.qlcm-course-reviews h3 {
+    margin: 0 0 24px 0;
+    font-size: 24px;
+    color: #333;
+    border-bottom: 2px solid #007cba;
+    padding-bottom: 8px;
+}
+
+.qlcm-course-reviews h4 {
+    margin: 24px 0 16px 0;
+    font-size: 18px;
+    color: #333;
+}
+
+/* Reviews List */
+.qlcm-reviews-list {
+    margin-bottom: 32px;
+}
+
+.qlcm-review-item {
+    padding: 16px;
+    border: 1px solid #e1e5e9;
+    border-radius: 6px;
+    margin-bottom: 16px;
+    background: #fafafa;
+}
+
+.qlcm-review-item:last-child {
+    margin-bottom: 0;
+}
+
+.qlcm-review-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+}
+
+.qlcm-reviewer-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.qlcm-reviewer-name {
+    font-weight: 600;
+    color: #333;
+}
+
+.qlcm-review-date {
+    font-size: 12px;
+    color: #666;
+}
+
+.qlcm-review-rating {
+    flex-shrink: 0;
+}
+
+.qlcm-review-title {
+    margin: 0 0 8px 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+}
+
+.qlcm-review-content {
+    color: #555;
+    line-height: 1.6;
+}
+
+.qlcm-review-content p {
+    margin: 0;
+}
+
+/* No Reviews Message */
+.qlcm-no-reviews {
+    text-align: center;
+    padding: 32px;
+    color: #666;
+    font-style: italic;
+}
+
+/* Rating Form */
+.qlcm-rating-form-container {
+    border-top: 1px solid #e1e5e9;
+    padding-top: 24px;
+}
+
+.qlcm-rating-form {
+    max-width: 600px;
+}
+
+.qlcm-rating-field,
+.qlcm-review-field,
+.qlcm-submit-field {
+    margin-bottom: 20px;
+}
+
+.qlcm-rating-field label,
+.qlcm-review-field label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #333;
+}
+
+/* Star Rating Input */
+.qlcm-rating-input {
+    display: flex;
+    flex-direction: row-reverse;
+    gap: 4px;
+    justify-content: flex-end;
+}
+
+.qlcm-rating-input input[type=\"radio\"] {
+    display: none;
+}
+
+.qlcm-rating-input label {
+    font-size: 24px;
+    color: #ddd;
+    cursor: pointer;
+    transition: color 0.2s ease;
+    margin: 0;
+    padding: 4px;
+}
+
+.qlcm-rating-input label:hover,
+.qlcm-rating-input label:hover ~ label {
+    color: #ffc107;
+}
+
+.qlcm-rating-input input[type=\"radio\"]:checked ~ label {
+    color: #ffc107;
+}
+
+/* Form Fields */
+.qlcm-review-field input[type=\"text\"],
+.qlcm-review-field textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    font-family: inherit;
+    transition: border-color 0.2s ease;
+}
+
+.qlcm-review-field input[type=\"text\"]:focus,
+.qlcm-review-field textarea:focus {
+    outline: none;
+    border-color: #007cba;
+    box-shadow: 0 0 0 2px rgba(0, 124, 186, 0.1);
+}
+
+.qlcm-review-field textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+/* Buttons */
+.qlcm-button {
+    display: inline-block;
+    padding: 12px 24px;
+    background: #007cba;
+    color: #fff;
+    text-decoration: none;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.qlcm-button:hover {
+    background: #005a87;
+    color: #fff;
+    text-decoration: none;
+}
+
+.qlcm-button:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+}
+
+.qlcm-submit-rating {
+    background: #28a745;
+}
+
+.qlcm-submit-rating:hover {
+    background: #218838;
+}
+
+/* Login/Enrollment Required */
+.qlcm-login-required,
+.qlcm-enrollment-required {
+    text-align: center;
+    padding: 24px;
+    background: #f8f9fa;
+    border: 1px solid #e1e5e9;
+    border-radius: 6px;
+    color: #666;
+}
+
+.qlcm-login-required p,
+.qlcm-enrollment-required p {
+    margin: 0 0 16px 0;
+}
+
+/* More Reviews Link */
+.qlcm-more-reviews {
+    text-align: center;
+    margin-top: 16px;
+}
+
+.qlcm-load-more-reviews {
+    color: #007cba;
+    text-decoration: none;
+    font-weight: 600;
+    padding: 8px 16px;
+    border: 1px solid #007cba;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.qlcm-load-more-reviews:hover {
+    background: #007cba;
+    color: #fff;
+    text-decoration: none;
+}
+
+/* Loading States */
+.qlcm-loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.qlcm-loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border: 2px solid #f3f3f3;
+    border-top: 2px solid #007cba;
+    border-radius: 50%;
+    animation: qlcm-spin 1s linear infinite;
+}
+
+@keyframes qlcm-spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Success/Error Messages */
+.qlcm-message {
+    padding: 12px 16px;
+    border-radius: 4px;
+    margin: 16px 0;
+    font-weight: 600;
+}
+
+.qlcm-message-success {
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.qlcm-message-error {
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .qlcm-course-rating-summary {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    
+    .qlcm-review-header {
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .qlcm-rating-input {
+        justify-content: center;
+    }
+    
+    .qlcm-rating-input label {
+        font-size: 20px;
+    }
+    
+    .qlcm-course-reviews {
+        padding: 16px;
+        margin: 16px 0;
+    }
+    
+    .qlcm-review-item {
+        padding: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .qlcm-stars {
+        font-size: 16px;
+    }
+    
+    .qlcm-stars-small {
+        font-size: 12px;
+    }
+    
+    .qlcm-rating-average {
+        font-size: 16px;
+    }
+    
+    .qlcm-rating-input label {
+        font-size: 18px;
+        padding: 2px;
+    }
+}
