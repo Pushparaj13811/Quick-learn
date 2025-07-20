@@ -201,7 +201,7 @@
     justify-content: flex-end;
 }
 
-.qlcm-rating-input input[type=\"radio\"] {
+.qlcm-rating-input input[type="radio"] {
     display: none;
 }
 
@@ -219,12 +219,12 @@
     color: #ffc107;
 }
 
-.qlcm-rating-input input[type=\"radio\"]:checked ~ label {
+.qlcm-rating-input input[type="radio"]:checked ~ label {
     color: #ffc107;
 }
 
 /* Form Fields */
-.qlcm-review-field input[type=\"text\"],
+.qlcm-review-field input[type="text"],
 .qlcm-review-field textarea {
     width: 100%;
     padding: 12px;
@@ -235,7 +235,7 @@
     transition: border-color 0.2s ease;
 }
 
-.qlcm-review-field input[type=\"text\"]:focus,
+.qlcm-review-field input[type="text"]:focus,
 .qlcm-review-field textarea:focus {
     outline: none;
     border-color: #007cba;

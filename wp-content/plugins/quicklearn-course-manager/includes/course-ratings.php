@@ -89,6 +89,7 @@ class QLCM_Course_Ratings {
             KEY user_id (user_id),
             KEY rating (rating),
             KEY status (status),
+            KEY created_date (created_date),
             UNIQUE KEY user_course (user_id,course_id)
         ) $charset_collate;";
         
