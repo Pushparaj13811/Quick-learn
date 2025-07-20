@@ -371,8 +371,19 @@ class QLCM_Course_Ratings {
      * Handle rating submission
      */
     public function handle_rating_submission() {
-        // Verify nonce
-        if (!isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce'], 'qlcm_rating_nonce')) {
+        // Get security manager instance
+        $security_manager = QLCM_Security_Manager::get_instance();
+        
+        // Enhanced rate limiting for rating submissions (Requirement 5.2)
+        if (!$security_manager->check_rate_limit('submit_course_rating', 3, 300)) { // 3 ratings per 5 minutes
+            wp_send_json_error(array(
+                'message' => __('Too many rating submissions. Please wait a moment and try again.', 'quicklearn-course-manager')
+            ));
+            wp_die();
+        }
+        
+        // Enhanced nonce verification (Requirement 5.2)
+        if (!isset($_POST['nonce']) || !$security_manager->verify_nonce($_POST['nonce'], 'qlcm_rating_nonce')) {
             wp_send_json_error(array('message' => __('Security check failed', 'quicklearn-course-manager')));
         }
         
@@ -381,11 +392,16 @@ class QLCM_Course_Ratings {
             wp_send_json_error(array('message' => __('You must be logged in to submit a review', 'quicklearn-course-manager')));
         }
         
-        // Get and validate parameters
-        $course_id = isset($_POST['course_id']) ? absint($_POST['course_id']) : 0;
-        $rating = isset($_POST['rating']) ? absint($_POST['rating']) : 0;
-        $review_title = isset($_POST['review_title']) ? sanitize_text_field($_POST['review_title']) : '';
-        $review_content = isset($_POST['review_content']) ? sanitize_textarea_field($_POST['review_content']) : '';
+        // Enhanced input sanitization using security manager (Requirement 5.1)
+        $course_id = isset($_POST['course_id']) ? $security_manager->sanitize_input($_POST['course_id'], 'int') : 0;
+        $rating = isset($_POST['rating']) ? $security_manager->sanitize_input($_POST['rating'], 'rating') : 0;
+        $review_title = isset($_POST['review_title']) ? $security_manager->sanitize_input($_POST['review_title'], 'text') : '';
+        $review_content = isset($_POST['review_content']) ? $security_manager->sanitize_input($_POST['review_content'], 'textarea') : '';
+        
+        // Additional validation for review content length and spam detection
+        if (strlen($review_content) > 2000) {
+            wp_send_json_error(array('message' => __('Review content is too long. Please limit to 2000 characters.', 'quicklearn-course-manager')));
+        }
         
         // Validate course
         if (!$course_id || get_post_type($course_id) !== 'quick_course') {

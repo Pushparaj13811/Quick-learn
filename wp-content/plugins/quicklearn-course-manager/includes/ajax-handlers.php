@@ -55,8 +55,11 @@ class QLCM_Ajax_Handlers {
         // Start performance timing
         $start_time = microtime(true);
         
-        // Rate limiting check (Requirement 5.2)
-        if (!QuickLearn_Course_Manager::check_rate_limit('filter_courses', 30, 60)) {
+        // Get security manager instance
+        $security_manager = QLCM_Security_Manager::get_instance();
+        
+        // Enhanced rate limiting check (Requirement 5.2)
+        if (!$security_manager->check_rate_limit('filter_courses', 30, 60)) {
             wp_send_json_error(array(
                 'message' => __('Too many requests. Please wait a moment and try again.', 'quicklearn-course-manager')
             ));
@@ -75,18 +78,22 @@ class QLCM_Ajax_Handlers {
             wp_die();
         }
         
-        // Verify nonce for security (Requirement 5.2)
-        if (!isset($_POST['nonce']) || !qlcm_verify_nonce($_POST['nonce'], 'quicklearn_filter_nonce')) {
+        // Enhanced nonce verification for security (Requirement 5.2)
+        if (!isset($_POST['nonce']) || !$security_manager->verify_nonce($_POST['nonce'], 'quicklearn_filter_nonce')) {
             wp_send_json_error(array(
                 'message' => __('Security check failed. Please refresh the page and try again.', 'quicklearn-course-manager')
             ));
             wp_die();
         }
         
-        // Sanitize and validate all input parameters (Requirement 5.1)
-        $category_slug = isset($_POST['category']) ? $this->sanitize_category_input($_POST['category']) : '';
-        $posts_per_page = isset($_POST['posts_per_page']) ? $this->sanitize_posts_per_page($_POST['posts_per_page']) : 12;
-        $paged = isset($_POST['paged']) ? $this->sanitize_page_number($_POST['paged']) : 1;
+        // Enhanced sanitization and validation using security manager (Requirement 5.1)
+        $category_slug = isset($_POST['category']) ? $security_manager->sanitize_input($_POST['category'], 'slug') : '';
+        $posts_per_page = isset($_POST['posts_per_page']) ? $security_manager->sanitize_input($_POST['posts_per_page'], 'int') : 12;
+        $paged = isset($_POST['paged']) ? $security_manager->sanitize_input($_POST['paged'], 'int') : 1;
+        
+        // Additional validation with security manager
+        $posts_per_page = max(1, min(50, $posts_per_page)); // Enforce limits
+        $paged = max(1, min(1000, $paged)); // Prevent abuse
         
         // Additional input validation
         if ($category_slug !== '' && !$this->validate_category_exists($category_slug)) {

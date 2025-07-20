@@ -203,8 +203,19 @@ class QLCM_User_Enrollment {
      * Handle course enrollment AJAX request
      */
     public function handle_course_enrollment() {
-        // Verify nonce
-        if (!isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce'], 'qlcm_enrollment_nonce')) {
+        // Get security manager instance
+        $security_manager = QLCM_Security_Manager::get_instance();
+        
+        // Enhanced rate limiting for enrollment (Requirement 5.2)
+        if (!$security_manager->check_rate_limit('enroll_in_course', 5, 300)) { // 5 enrollments per 5 minutes
+            wp_send_json_error(array(
+                'message' => __('Too many enrollment attempts. Please wait a moment and try again.', 'quicklearn-course-manager')
+            ));
+            wp_die();
+        }
+        
+        // Enhanced nonce verification (Requirement 5.2)
+        if (!isset($_POST['nonce']) || !$security_manager->verify_nonce($_POST['nonce'], 'qlcm_enrollment_nonce')) {
             wp_send_json_error(array('message' => __('Security check failed', 'quicklearn-course-manager')));
         }
         
@@ -216,8 +227,8 @@ class QLCM_User_Enrollment {
             ));
         }
         
-        // Get course ID
-        $course_id = isset($_POST['course_id']) ? absint($_POST['course_id']) : 0;
+        // Enhanced input sanitization (Requirement 5.1)
+        $course_id = isset($_POST['course_id']) ? $security_manager->sanitize_input($_POST['course_id'], 'int') : 0;
         
         // Validate course
         if (!$course_id || get_post_type($course_id) !== 'quick_course') {

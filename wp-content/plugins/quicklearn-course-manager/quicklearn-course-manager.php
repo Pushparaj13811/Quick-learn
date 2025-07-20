@@ -71,6 +71,12 @@ class QuickLearn_Course_Manager {
      * Include required files
      */
     private function include_files() {
+        // Load security manager first
+        require_once QLCM_PLUGIN_PATH . 'includes/security-manager.php';
+        require_once QLCM_PLUGIN_PATH . 'includes/security-dashboard.php';
+        require_once QLCM_PLUGIN_PATH . 'includes/role-manager.php';
+        require_once QLCM_PLUGIN_PATH . 'includes/capability-manager.php';
+        
         require_once QLCM_PLUGIN_PATH . 'includes/course-cpt.php';
         require_once QLCM_PLUGIN_PATH . 'includes/course-taxonomy.php';
         require_once QLCM_PLUGIN_PATH . 'includes/ajax-handlers.php';
@@ -85,6 +91,7 @@ class QuickLearn_Course_Manager {
         require_once QLCM_PLUGIN_PATH . 'includes/course-qa.php';
         require_once QLCM_PLUGIN_PATH . 'includes/user-profiles.php';
         require_once QLCM_PLUGIN_PATH . 'includes/admin-pages.php';
+        require_once QLCM_PLUGIN_PATH . 'includes/database-optimization.php';
     }
     
     /**
@@ -136,6 +143,26 @@ class QuickLearn_Course_Manager {
      * Initialize plugin functionality
      */
     public function init() {
+        // Initialize security manager first
+        if (class_exists('QLCM_Security_Manager')) {
+            QLCM_Security_Manager::get_instance();
+        }
+        
+        // Initialize security dashboard
+        if (class_exists('QLCM_Security_Dashboard')) {
+            QLCM_Security_Dashboard::get_instance();
+        }
+        
+        // Initialize role manager
+        if (class_exists('QLCM_Role_Manager')) {
+            QLCM_Role_Manager::get_instance();
+        }
+        
+        // Initialize capability manager
+        if (class_exists('QLCM_Capability_Manager')) {
+            QLCM_Capability_Manager::get_instance();
+        }
+        
         // Initialize course post type
         if (class_exists('QLCM_Course_CPT')) {
             QLCM_Course_CPT::get_instance();
