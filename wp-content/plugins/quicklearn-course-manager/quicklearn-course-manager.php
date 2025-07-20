@@ -74,6 +74,8 @@ class QuickLearn_Course_Manager {
         // Load security manager first
         require_once QLCM_PLUGIN_PATH . 'includes/security-manager.php';
         require_once QLCM_PLUGIN_PATH . 'includes/security-dashboard.php';
+        require_once QLCM_PLUGIN_PATH . 'includes/role-manager.php';
+        require_once QLCM_PLUGIN_PATH . 'includes/capability-manager.php';
         
         require_once QLCM_PLUGIN_PATH . 'includes/course-cpt.php';
         require_once QLCM_PLUGIN_PATH . 'includes/course-taxonomy.php';
@@ -149,6 +151,16 @@ class QuickLearn_Course_Manager {
         // Initialize security dashboard
         if (class_exists('QLCM_Security_Dashboard')) {
             QLCM_Security_Dashboard::get_instance();
+        }
+        
+        // Initialize role manager
+        if (class_exists('QLCM_Role_Manager')) {
+            QLCM_Role_Manager::get_instance();
+        }
+        
+        // Initialize capability manager
+        if (class_exists('QLCM_Capability_Manager')) {
+            QLCM_Capability_Manager::get_instance();
         }
         
         // Initialize course post type
