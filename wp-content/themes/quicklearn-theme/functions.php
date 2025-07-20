@@ -1048,3 +1048,324 @@ function quicklearn_course_categories_shortcode($atts) {
     
     return ob_get_clean();
 }
+
+/**
+ * Theme activation function - Creates necessary pages automatically
+ */
+function quicklearn_theme_activation() {
+    // Create necessary pages for the theme
+    $pages = array(
+        array(
+            'title' => 'Courses',
+            'content' => '<!-- wp:shortcode -->[course_grid limit="12" columns="3"]<!-- /wp:shortcode -->',
+            'template' => 'page-courses.php',
+            'meta_key' => '_quicklearn_courses_page'
+        ),
+        array(
+            'title' => 'Dashboard',
+            'content' => '<!-- wp:paragraph --><p>Welcome to your learning dashboard!</p><!-- /wp:paragraph -->',
+            'template' => 'page-dashboard.php',
+            'meta_key' => '_quicklearn_dashboard_page'
+        ),
+        array(
+            'title' => 'Verify Certificate',
+            'content' => '<!-- wp:paragraph --><p>Enter your certificate code to verify its authenticity.</p><!-- /wp:paragraph -->',
+            'template' => 'page-verify-certificate.php',
+            'meta_key' => '_quicklearn_verify_page'
+        ),
+        array(
+            'title' => 'Login',
+            'content' => '<!-- wp:shortcode -->[wp_login_form]<!-- /wp:shortcode -->',
+            'template' => '',
+            'meta_key' => '_quicklearn_login_page'
+        ),
+        array(
+            'title' => 'Register',
+            'content' => '<!-- wp:shortcode -->[wp_registration_form]<!-- /wp:shortcode -->',
+            'template' => '',
+            'meta_key' => '_quicklearn_register_page'
+        ),
+        array(
+            'title' => 'My Account',
+            'content' => '<!-- wp:paragraph --><p>Manage your account settings and preferences.</p><!-- /wp:paragraph -->',
+            'template' => '',
+            'meta_key' => '_quicklearn_account_page'
+        ),
+        array(
+            'title' => 'My Courses',
+            'content' => '<!-- wp:shortcode -->[my_enrolled_courses]<!-- /wp:shortcode -->',
+            'template' => '',
+            'meta_key' => '_quicklearn_my_courses_page'
+        )
+    );
+    
+    foreach ($pages as $page_data) {
+        // Check if page already exists
+        $existing_page = get_option($page_data['meta_key']);
+        if ($existing_page && get_post($existing_page)) {
+            continue; // Page already exists
+        }
+        
+        // Create the page
+        $page_args = array(
+            'post_title'    => $page_data['title'],
+            'post_content'  => $page_data['content'],
+            'post_status'   => 'publish',
+            'post_type'     => 'page',
+            'post_author'   => get_current_user_id(),
+            'comment_status' => 'closed'
+        );
+        
+        // Insert the page
+        $page_id = wp_insert_post($page_args);
+        
+        if (!is_wp_error($page_id)) {
+            // Set page template if specified
+            if (!empty($page_data['template'])) {
+                update_post_meta($page_id, '_wp_page_template', $page_data['template']);
+            }
+            
+            // Save the page ID for future reference
+            update_option($page_data['meta_key'], $page_id);
+        }
+    }
+    
+    // Create default menu if it doesn't exist
+    quicklearn_create_default_menu();
+    
+    // Set front page options
+    update_option('show_on_front', 'page');
+    $home_page = get_option('_quicklearn_courses_page');
+    if ($home_page) {
+        update_option('page_on_front', $home_page);
+    }
+    
+    // Flush rewrite rules
+    flush_rewrite_rules();
+}
+add_action('after_switch_theme', 'quicklearn_theme_activation');
+
+/**
+ * Create default navigation menu
+ */
+function quicklearn_create_default_menu() {
+    // Check if primary menu already exists
+    $menu_name = 'Primary Menu';
+    $menu_exists = wp_get_nav_menu_object($menu_name);
+    
+    if (!$menu_exists) {
+        // Create the menu
+        $menu_id = wp_create_nav_menu($menu_name);
+        
+        if (!is_wp_error($menu_id)) {
+            // Add menu items
+            $menu_items = array(
+                array(
+                    'title' => 'Home',
+                    'url' => home_url('/'),
+                    'position' => 1
+                ),
+                array(
+                    'title' => 'Courses',
+                    'page_option' => '_quicklearn_courses_page',
+                    'position' => 2
+                ),
+                array(
+                    'title' => 'Dashboard',
+                    'page_option' => '_quicklearn_dashboard_page',
+                    'position' => 3
+                ),
+                array(
+                    'title' => 'My Account',
+                    'page_option' => '_quicklearn_account_page',
+                    'position' => 4
+                ),
+                array(
+                    'title' => 'Login',
+                    'page_option' => '_quicklearn_login_page',
+                    'position' => 5
+                ),
+                array(
+                    'title' => 'Register',
+                    'page_option' => '_quicklearn_register_page',
+                    'position' => 6
+                )
+            );
+            
+            foreach ($menu_items as $item) {
+                $menu_item_data = array(
+                    'menu-item-title' => $item['title'],
+                    'menu-item-position' => $item['position'],
+                    'menu-item-status' => 'publish'
+                );
+                
+                if (isset($item['url'])) {
+                    $menu_item_data['menu-item-url'] = $item['url'];
+                    $menu_item_data['menu-item-type'] = 'custom';
+                } elseif (isset($item['page_option'])) {
+                    $page_id = get_option($item['page_option']);
+                    if ($page_id) {
+                        $menu_item_data['menu-item-object'] = 'page';
+                        $menu_item_data['menu-item-object-id'] = $page_id;
+                        $menu_item_data['menu-item-type'] = 'post_type';
+                    }
+                }
+                
+                wp_update_nav_menu_item($menu_id, 0, $menu_item_data);
+            }
+            
+            // Assign menu to primary location
+            $locations = get_theme_mod('nav_menu_locations');
+            $locations['primary'] = $menu_id;
+            set_theme_mod('nav_menu_locations', $locations);
+        }
+    }
+}
+
+/**
+ * Add custom login/register shortcodes
+ */
+function quicklearn_register_auth_shortcodes() {
+    // Login form shortcode
+    add_shortcode('wp_login_form', 'quicklearn_login_form_shortcode');
+    
+    // Registration form shortcode
+    add_shortcode('wp_registration_form', 'quicklearn_registration_form_shortcode');
+    
+    // My enrolled courses shortcode
+    add_shortcode('my_enrolled_courses', 'quicklearn_my_enrolled_courses_shortcode');
+}
+add_action('init', 'quicklearn_register_auth_shortcodes');
+
+/**
+ * Login form shortcode
+ */
+function quicklearn_login_form_shortcode($atts) {
+    if (is_user_logged_in()) {
+        return '<p>' . __('You are already logged in.', 'quicklearn') . ' <a href="' . esc_url(get_option('_quicklearn_dashboard_page') ? get_permalink(get_option('_quicklearn_dashboard_page')) : home_url('/dashboard')) . '">' . __('Go to Dashboard', 'quicklearn') . '</a></p>';
+    }
+    
+    $atts = shortcode_atts(array(
+        'redirect' => get_option('_quicklearn_dashboard_page') ? get_permalink(get_option('_quicklearn_dashboard_page')) : home_url('/dashboard'),
+        'form_id' => 'quicklearn-login-form',
+        'label_username' => __('Username or Email', 'quicklearn'),
+        'label_password' => __('Password', 'quicklearn'),
+        'label_remember' => __('Remember Me', 'quicklearn'),
+        'label_log_in' => __('Log In', 'quicklearn'),
+        'remember' => true
+    ), $atts);
+    
+    return wp_login_form(array(
+        'echo' => false,
+        'redirect' => $atts['redirect'],
+        'form_id' => $atts['form_id'],
+        'label_username' => $atts['label_username'],
+        'label_password' => $atts['label_password'],
+        'label_remember' => $atts['label_remember'],
+        'label_log_in' => $atts['label_log_in'],
+        'id_username' => 'user_login',
+        'id_password' => 'user_pass',
+        'id_remember' => 'rememberme',
+        'id_submit' => 'wp-submit',
+        'remember' => $atts['remember'],
+        'value_username' => '',
+        'value_remember' => false
+    ));
+}
+
+/**
+ * Registration form shortcode
+ */
+function quicklearn_registration_form_shortcode($atts) {
+    if (is_user_logged_in()) {
+        return '<p>' . __('You are already registered and logged in.', 'quicklearn') . '</p>';
+    }
+    
+    // Check if registration is enabled
+    if (!get_option('users_can_register')) {
+        return '<p>' . __('User registration is currently disabled.', 'quicklearn') . '</p>';
+    }
+    
+    ob_start();
+    ?>
+    <form id="quicklearn-registration-form" class="quicklearn-form" action="<?php echo esc_url(site_url('wp-login.php?action=register', 'login_post')); ?>" method="post">
+        <p class="quicklearn-form-row">
+            <label for="user_login"><?php _e('Username', 'quicklearn'); ?> <span class="required">*</span></label>
+            <input type="text" name="user_login" id="user_login" class="quicklearn-form-input" value="" required />
+        </p>
+        
+        <p class="quicklearn-form-row">
+            <label for="user_email"><?php _e('Email Address', 'quicklearn'); ?> <span class="required">*</span></label>
+            <input type="email" name="user_email" id="user_email" class="quicklearn-form-input" value="" required />
+        </p>
+        
+        <p class="quicklearn-form-row">
+            <label for="first_name"><?php _e('First Name', 'quicklearn'); ?></label>
+            <input type="text" name="first_name" id="first_name" class="quicklearn-form-input" value="" />
+        </p>
+        
+        <p class="quicklearn-form-row">
+            <label for="last_name"><?php _e('Last Name', 'quicklearn'); ?></label>
+            <input type="text" name="last_name" id="last_name" class="quicklearn-form-input" value="" />
+        </p>
+        
+        <?php do_action('register_form'); ?>
+        
+        <p class="quicklearn-form-row">
+            <input type="submit" name="wp-submit" id="wp-submit" class="quicklearn-form-button" value="<?php esc_attr_e('Register', 'quicklearn'); ?>" />
+        </p>
+        
+        <p class="quicklearn-form-info">
+            <?php _e('A password will be sent to your email address.', 'quicklearn'); ?>
+        </p>
+        
+        <p class="quicklearn-form-links">
+            <?php _e('Already have an account?', 'quicklearn'); ?> 
+            <a href="<?php echo esc_url(get_option('_quicklearn_login_page') ? get_permalink(get_option('_quicklearn_login_page')) : wp_login_url()); ?>">
+                <?php _e('Log in', 'quicklearn'); ?>
+            </a>
+        </p>
+    </form>
+    <?php
+    return ob_get_clean();
+}
+
+/**
+ * My enrolled courses shortcode
+ */
+function quicklearn_my_enrolled_courses_shortcode($atts) {
+    if (!is_user_logged_in()) {
+        return '<p>' . __('Please log in to view your enrolled courses.', 'quicklearn') . ' <a href="' . esc_url(get_option('_quicklearn_login_page') ? get_permalink(get_option('_quicklearn_login_page')) : wp_login_url()) . '">' . __('Log in', 'quicklearn') . '</a></p>';
+    }
+    
+    $user_id = get_current_user_id();
+    
+    // Get enrolled courses using plugin function if available
+    if (function_exists('qlcm_get_user_enrolled_courses')) {
+        $enrolled_courses = qlcm_get_user_enrolled_courses($user_id);
+        
+        if (empty($enrolled_courses)) {
+            return '<p>' . __('You have not enrolled in any courses yet.', 'quicklearn') . ' <a href="' . esc_url(get_option('_quicklearn_courses_page') ? get_permalink(get_option('_quicklearn_courses_page')) : home_url('/courses')) . '">' . __('Browse Courses', 'quicklearn') . '</a></p>';
+        }
+        
+        ob_start();
+        echo '<div class="my-enrolled-courses">';
+        echo '<div class="course-grid">';
+        
+        foreach ($enrolled_courses as $course_id) {
+            $post = get_post($course_id);
+            if ($post && $post->post_status === 'publish') {
+                setup_postdata($post);
+                get_template_part('template-parts/course', 'card');
+            }
+        }
+        
+        echo '</div>';
+        echo '</div>';
+        wp_reset_postdata();
+        
+        return ob_get_clean();
+    } else {
+        return '<p>' . __('Course enrollment feature is not available.', 'quicklearn') . '</p>';
+    }
+}
