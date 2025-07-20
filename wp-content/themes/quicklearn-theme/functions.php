@@ -10,6 +10,9 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
+// Include performance optimization
+require_once get_template_directory() . '/includes/performance-optimization.php';
+
 /**
  * Theme setup function
  */
@@ -141,6 +144,21 @@ function quicklearn_enqueue_scripts() {
         wp_get_theme()->get('Version'),
         true
     );
+    
+    // Enqueue lazy loading script
+    wp_enqueue_script(
+        'quicklearn-lazy-loading',
+        get_template_directory_uri() . '/js/lazy-loading.js',
+        array(),
+        wp_get_theme()->get('Version'),
+        true
+    );
+    
+    // Localize script for AJAX pagination
+    wp_localize_script('quicklearn-lazy-loading', 'quicklearn_ajax', array(
+        'ajax_url' => admin_url('admin-ajax.php'),
+        'pagination_nonce' => wp_create_nonce('quicklearn_pagination_nonce'),
+    ));
     
     // Enqueue course filter script (for courses page)
     if (is_page('courses') || is_page_template('page-courses.php') || is_post_type_archive('quick_course') || is_tax('course_category')) {

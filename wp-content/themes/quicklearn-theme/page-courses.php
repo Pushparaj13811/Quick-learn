@@ -83,7 +83,7 @@ get_header(); ?>
 
                 if ($courses_query->have_posts()) :
                     while ($courses_query->have_posts()) : $courses_query->the_post();
-                        get_template_part('template-parts/course', 'card');
+                        get_template_part('template-parts/course-card');
                     endwhile;
                     wp_reset_postdata();
                 else :
@@ -97,23 +97,38 @@ get_header(); ?>
                 ?>
             </div>
 
-            <!-- Pagination -->
+            <!-- Load More Button for AJAX Pagination -->
             <?php if ($courses_query->max_num_pages > 1) : ?>
                 <div class="courses-pagination">
-                    <?php
-                    echo paginate_links(array(
-                        'total' => $courses_query->max_num_pages,
-                        'current' => max(1, get_query_var('paged')),
-                        'format' => '?paged=%#%',
-                        'show_all' => false,
-                        'end_size' => 1,
-                        'mid_size' => 2,
-                        'prev_next' => true,
-                        'prev_text' => __('&laquo; Previous', 'quicklearn'),
-                        'next_text' => __('Next &raquo;', 'quicklearn'),
-                        'type' => 'plain',
-                    ));
-                    ?>
+                    <button class="load-more-courses btn btn-primary" 
+                            data-page="1"
+                            data-max-pages="<?php echo esc_attr($courses_query->max_num_pages); ?>"
+                            data-category=""
+                            data-posts-per-page="12"
+                            data-loading-text="<?php esc_attr_e('Loading...', 'quicklearn'); ?>"
+                            data-original-text="<?php esc_attr_e('Load More Courses', 'quicklearn'); ?>">
+                        <?php esc_html_e('Load More Courses', 'quicklearn'); ?>
+                    </button>
+                    
+                    <!-- Fallback traditional pagination (hidden by default, shown if JS disabled) -->
+                    <noscript>
+                        <div class="traditional-pagination">
+                            <?php
+                            echo paginate_links(array(
+                                'total' => $courses_query->max_num_pages,
+                                'current' => max(1, get_query_var('paged')),
+                                'format' => '?paged=%#%',
+                                'show_all' => false,
+                                'end_size' => 1,
+                                'mid_size' => 2,
+                                'prev_next' => true,
+                                'prev_text' => __('&laquo; Previous', 'quicklearn'),
+                                'next_text' => __('Next &raquo;', 'quicklearn'),
+                                'type' => 'plain',
+                            ));
+                            ?>
+                        </div>
+                    </noscript>
                 </div>
             <?php endif; ?>
         </div>
