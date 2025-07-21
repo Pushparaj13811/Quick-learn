@@ -13,6 +13,9 @@ if (!defined('ABSPATH')) {
 // Include performance optimization
 require_once get_template_directory() . '/includes/performance-optimization.php';
 
+// Include theme activator
+require_once get_template_directory() . '/includes/class-theme-activator.php';
+
 /**
  * Theme setup function
  */
@@ -120,12 +123,73 @@ add_action('after_setup_theme', 'quicklearn_theme_setup');
  * Enqueue scripts and styles
  */
 function quicklearn_enqueue_scripts() {
+    $theme_version = wp_get_theme()->get('Version');
+    
+    // Enqueue design tokens first (foundation)
+    wp_enqueue_style(
+        'quicklearn-design-tokens',
+        get_template_directory_uri() . '/css/design-tokens.css',
+        array(),
+        $theme_version
+    );
+    
+    // Enqueue component stylesheets
+    wp_enqueue_style(
+        'quicklearn-buttons',
+        get_template_directory_uri() . '/css/components/buttons.css',
+        array('quicklearn-design-tokens'),
+        $theme_version
+    );
+    
+    wp_enqueue_style(
+        'quicklearn-cards',
+        get_template_directory_uri() . '/css/components/cards.css',
+        array('quicklearn-design-tokens'),
+        $theme_version
+    );
+    
+    wp_enqueue_style(
+        'quicklearn-forms',
+        get_template_directory_uri() . '/css/components/forms.css',
+        array('quicklearn-design-tokens'),
+        $theme_version
+    );
+    
+    wp_enqueue_style(
+        'quicklearn-grid',
+        get_template_directory_uri() . '/css/components/grid.css',
+        array('quicklearn-design-tokens'),
+        $theme_version
+    );
+    
+    wp_enqueue_style(
+        'quicklearn-progress',
+        get_template_directory_uri() . '/css/components/progress.css',
+        array('quicklearn-design-tokens'),
+        $theme_version
+    );
+    
+    wp_enqueue_style(
+        'quicklearn-modal',
+        get_template_directory_uri() . '/css/components/modal.css',
+        array('quicklearn-design-tokens'),
+        $theme_version
+    );
+    
     // Enqueue main stylesheet
     wp_enqueue_style(
         'quicklearn-style',
         get_stylesheet_uri(),
-        array(),
-        wp_get_theme()->get('Version')
+        array(
+            'quicklearn-design-tokens',
+            'quicklearn-buttons',
+            'quicklearn-cards',
+            'quicklearn-forms',
+            'quicklearn-grid',
+            'quicklearn-progress',
+            'quicklearn-modal'
+        ),
+        $theme_version
     );
     
     // Enqueue custom CSS
@@ -133,7 +197,7 @@ function quicklearn_enqueue_scripts() {
         'quicklearn-custom',
         get_template_directory_uri() . '/css/custom.css',
         array('quicklearn-style'),
-        wp_get_theme()->get('Version')
+        $theme_version
     );
     
     // Enqueue front page CSS (only on front page)
@@ -142,7 +206,7 @@ function quicklearn_enqueue_scripts() {
             'quicklearn-front-page',
             get_template_directory_uri() . '/css/front-page.css',
             array('quicklearn-custom'),
-            wp_get_theme()->get('Version')
+            $theme_version
         );
     }
     
@@ -152,7 +216,7 @@ function quicklearn_enqueue_scripts() {
             'quicklearn-dashboard',
             get_template_directory_uri() . '/css/dashboard.css',
             array('quicklearn-custom'),
-            wp_get_theme()->get('Version')
+            $theme_version
         );
     }
     
@@ -161,7 +225,7 @@ function quicklearn_enqueue_scripts() {
         'quicklearn-navigation',
         get_template_directory_uri() . '/css/navigation.css',
         array('quicklearn-custom'),
-        wp_get_theme()->get('Version')
+        $theme_version
     );
     
     // Enqueue navigation script
@@ -1095,101 +1159,7 @@ function quicklearn_course_categories_shortcode($atts) {
     return ob_get_clean();
 }
 
-/**
- * Theme activation function - Creates necessary pages automatically
- */
-function quicklearn_theme_activation() {
-    // Create necessary pages for the theme
-    $pages = array(
-        array(
-            'title' => 'Courses',
-            'content' => '<!-- wp:shortcode -->[course_grid limit="12" columns="3"]<!-- /wp:shortcode -->',
-            'template' => 'page-courses.php',
-            'meta_key' => '_quicklearn_courses_page'
-        ),
-        array(
-            'title' => 'Dashboard',
-            'content' => '<!-- wp:paragraph --><p>Welcome to your learning dashboard!</p><!-- /wp:paragraph -->',
-            'template' => 'page-dashboard.php',
-            'meta_key' => '_quicklearn_dashboard_page'
-        ),
-        array(
-            'title' => 'Verify Certificate',
-            'content' => '<!-- wp:paragraph --><p>Enter your certificate code to verify its authenticity.</p><!-- /wp:paragraph -->',
-            'template' => 'page-verify-certificate.php',
-            'meta_key' => '_quicklearn_verify_page'
-        ),
-        array(
-            'title' => 'Login',
-            'content' => '<!-- wp:shortcode -->[wp_login_form]<!-- /wp:shortcode -->',
-            'template' => '',
-            'meta_key' => '_quicklearn_login_page'
-        ),
-        array(
-            'title' => 'Register',
-            'content' => '<!-- wp:shortcode -->[wp_registration_form]<!-- /wp:shortcode -->',
-            'template' => '',
-            'meta_key' => '_quicklearn_register_page'
-        ),
-        array(
-            'title' => 'My Account',
-            'content' => '<!-- wp:paragraph --><p>Manage your account settings and preferences.</p><!-- /wp:paragraph -->',
-            'template' => '',
-            'meta_key' => '_quicklearn_account_page'
-        ),
-        array(
-            'title' => 'My Courses',
-            'content' => '<!-- wp:shortcode -->[my_enrolled_courses]<!-- /wp:shortcode -->',
-            'template' => '',
-            'meta_key' => '_quicklearn_my_courses_page'
-        )
-    );
-    
-    foreach ($pages as $page_data) {
-        // Check if page already exists
-        $existing_page = get_option($page_data['meta_key']);
-        if ($existing_page && get_post($existing_page)) {
-            continue; // Page already exists
-        }
-        
-        // Create the page
-        $page_args = array(
-            'post_title'    => $page_data['title'],
-            'post_content'  => $page_data['content'],
-            'post_status'   => 'publish',
-            'post_type'     => 'page',
-            'post_author'   => get_current_user_id(),
-            'comment_status' => 'closed'
-        );
-        
-        // Insert the page
-        $page_id = wp_insert_post($page_args);
-        
-        if (!is_wp_error($page_id)) {
-            // Set page template if specified
-            if (!empty($page_data['template'])) {
-                update_post_meta($page_id, '_wp_page_template', $page_data['template']);
-            }
-            
-            // Save the page ID for future reference
-            update_option($page_data['meta_key'], $page_id);
-        }
-    }
-    
-    // Create default menu if it doesn't exist
-    quicklearn_create_default_menu();
-    
-    // Set front page options
-    update_option('show_on_front', 'page');
-    $home_page = get_option('_quicklearn_courses_page');
-    if ($home_page) {
-        update_option('page_on_front', $home_page);
-    }
-    
-    // Flush rewrite rules
-    flush_rewrite_rules();
-}
-add_action('after_switch_theme', 'quicklearn_theme_activation');
+// Removed duplicate theme activation function - using QuickLearn_Theme_Activator instead
 
 /**
  * Create default navigation menu
@@ -1415,3 +1385,339 @@ function quicklearn_my_enrolled_courses_shortcode($atts) {
         return '<p>' . __('Course enrollment feature is not available.', 'quicklearn') . '</p>';
     }
 }
+
+/**
+ * Theme activation hook
+ */
+function quicklearn_theme_activation() {
+    // Run the theme activator
+    QuickLearn_Theme_Activator::activate();
+}
+add_action('after_switch_theme', 'quicklearn_theme_activation');
+
+/**
+ * Display activation notice
+ */
+function quicklearn_activation_notice() {
+    if (get_transient('quicklearn_activation_notice')) {
+        echo '<div class="notice notice-success is-dismissible">';
+        echo '<h3>' . __('🎉 QuickLearn Academy Activated Successfully!', 'quicklearn') . '</h3>';
+        echo '<p>' . __('Your learning management system is ready! We\'ve automatically created sample courses, essential pages, and demo accounts for you.', 'quicklearn') . '</p>';
+        echo '<p>';
+        echo '<a href="' . esc_url(get_page_link(get_option('quicklearn_dashboard_page_id'))) . '" class="button button-primary">' . __('View Dashboard', 'quicklearn') . '</a> ';
+        echo '<a href="' . esc_url(get_page_link(get_option('quicklearn_courses_page_id'))) . '" class="button">' . __('Browse Courses', 'quicklearn') . '</a> ';
+        echo '<a href="' . esc_url(admin_url('customize.php')) . '" class="button">' . __('Customize Site', 'quicklearn') . '</a>';
+        echo '</p>';
+        echo '</div>';
+        
+        // Clear the transient
+        delete_transient('quicklearn_activation_notice');
+    }
+}
+add_action('admin_notices', 'quicklearn_activation_notice');
+
+/**
+ * Add admin menu for QuickLearn settings
+ */
+function quicklearn_admin_menu() {
+    add_menu_page(
+        __('QuickLearn Settings', 'quicklearn'),
+        __('QuickLearn', 'quicklearn'),
+        'manage_options',
+        'quicklearn-settings',
+        'quicklearn_settings_page',
+        'dashicons-graduation-cap',
+        30
+    );
+    
+    add_submenu_page(
+        'quicklearn-settings',
+        __('Getting Started', 'quicklearn'),
+        __('Getting Started', 'quicklearn'),
+        'manage_options',
+        'quicklearn-getting-started',
+        'quicklearn_getting_started_page'
+    );
+}
+add_action('admin_menu', 'quicklearn_admin_menu');
+
+/**
+ * QuickLearn settings page
+ */
+function quicklearn_settings_page() {
+    ?>
+    <div class="wrap">
+        <h1><?php _e('QuickLearn Settings', 'quicklearn'); ?></h1>
+        
+        <div class="quicklearn-admin-grid">
+            <div class="quicklearn-admin-main">
+                <form method="post" action="options.php">
+                    <?php
+                    settings_fields('quicklearn_settings');
+                    do_settings_sections('quicklearn_settings');
+                    ?>
+                    
+                    <table class="form-table">
+                        <tr>
+                            <th scope="row"><?php _e('Courses Per Page', 'quicklearn'); ?></th>
+                            <td>
+                                <input type="number" name="quicklearn_courses_per_page" value="<?php echo esc_attr(get_option('quicklearn_courses_per_page', 12)); ?>" min="1" max="50" />
+                                <p class="description"><?php _e('Number of courses to display per page.', 'quicklearn'); ?></p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row"><?php _e('Enable Course Reviews', 'quicklearn'); ?></th>
+                            <td>
+                                <label>
+                                    <input type="checkbox" name="quicklearn_enable_course_reviews" value="1" <?php checked(get_option('quicklearn_enable_course_reviews'), 1); ?> />
+                                    <?php _e('Allow students to review courses', 'quicklearn'); ?>
+                                </label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row"><?php _e('Enable Course Ratings', 'quicklearn'); ?></th>
+                            <td>
+                                <label>
+                                    <input type="checkbox" name="quicklearn_enable_course_ratings" value="1" <?php checked(get_option('quicklearn_enable_course_ratings'), 1); ?> />
+                                    <?php _e('Allow students to rate courses', 'quicklearn'); ?>
+                                </label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row"><?php _e('Currency Symbol', 'quicklearn'); ?></th>
+                            <td>
+                                <input type="text" name="quicklearn_currency_symbol" value="<?php echo esc_attr(get_option('quicklearn_currency_symbol', '$')); ?>" maxlength="5" />
+                                <p class="description"><?php _e('Currency symbol for course prices.', 'quicklearn'); ?></p>
+                            </td>
+                        </tr>
+                    </table>
+                    
+                    <?php submit_button(); ?>
+                </form>
+            </div>
+            
+            <div class="quicklearn-admin-sidebar">
+                <div class="quicklearn-admin-widget">
+                    <h3><?php _e('Quick Stats', 'quicklearn'); ?></h3>
+                    <ul>
+                        <li><?php printf(__('Total Courses: %d', 'quicklearn'), wp_count_posts('quick_course')->publish); ?></li>
+                        <li><?php printf(__('Total Students: %d', 'quicklearn'), count(get_users(array('role' => 'qlcm_student')))); ?></li>
+                        <li><?php printf(__('Total Instructors: %d', 'quicklearn'), count(get_users(array('role' => 'qlcm_instructor')))); ?></li>
+                    </ul>
+                </div>
+                
+                <div class="quicklearn-admin-widget">
+                    <h3><?php _e('Quick Links', 'quicklearn'); ?></h3>
+                    <ul>
+                        <li><a href="<?php echo esc_url(get_page_link(get_option('quicklearn_dashboard_page_id'))); ?>"><?php _e('View Dashboard', 'quicklearn'); ?></a></li>
+                        <li><a href="<?php echo esc_url(get_page_link(get_option('quicklearn_courses_page_id'))); ?>"><?php _e('View Courses', 'quicklearn'); ?></a></li>
+                        <li><a href="<?php echo esc_url(admin_url('edit.php?post_type=quick_course')); ?>"><?php _e('Manage Courses', 'quicklearn'); ?></a></li>
+                        <li><a href="<?php echo esc_url(admin_url('users.php')); ?>"><?php _e('Manage Users', 'quicklearn'); ?></a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <style>
+    .quicklearn-admin-grid {
+        display: grid;
+        grid-template-columns: 1fr 300px;
+        gap: 2rem;
+        margin-top: 2rem;
+    }
+    
+    .quicklearn-admin-widget {
+        background: #fff;
+        border: 1px solid #ccd0d4;
+        border-radius: 4px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+    
+    .quicklearn-admin-widget h3 {
+        margin-top: 0;
+        margin-bottom: 1rem;
+        font-size: 14px;
+        color: #23282d;
+    }
+    
+    .quicklearn-admin-widget ul {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+    
+    .quicklearn-admin-widget li {
+        padding: 0.5rem 0;
+        border-bottom: 1px solid #f0f0f1;
+    }
+    
+    .quicklearn-admin-widget li:last-child {
+        border-bottom: none;
+    }
+    
+    @media (max-width: 782px) {
+        .quicklearn-admin-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+    </style>
+    <?php
+}
+
+/**
+ * Getting started page
+ */
+function quicklearn_getting_started_page() {
+    ?>
+    <div class="wrap">
+        <h1><?php _e('Getting Started with QuickLearn', 'quicklearn'); ?></h1>
+        
+        <div class="quicklearn-getting-started">
+            <div class="welcome-panel">
+                <div class="welcome-panel-content">
+                    <h2><?php _e('Welcome to QuickLearn Academy!', 'quicklearn'); ?></h2>
+                    <p class="about-description"><?php _e('Your complete learning management system is ready to use. Follow these steps to get started:', 'quicklearn'); ?></p>
+                    
+                    <div class="welcome-panel-column-container">
+                        <div class="welcome-panel-column">
+                            <h3><?php _e('Explore Your Site', 'quicklearn'); ?></h3>
+                            <a class="button button-primary button-hero" href="<?php echo esc_url(get_page_link(get_option('quicklearn_dashboard_page_id'))); ?>"><?php _e('View Dashboard', 'quicklearn'); ?></a>
+                            <p><?php _e('See your admin dashboard with analytics and quick actions.', 'quicklearn'); ?></p>
+                        </div>
+                        <div class="welcome-panel-column">
+                            <h3><?php _e('Browse Sample Courses', 'quicklearn'); ?></h3>
+                            <a class="button" href="<?php echo esc_url(get_page_link(get_option('quicklearn_courses_page_id'))); ?>"><?php _e('View Courses', 'quicklearn'); ?></a>
+                            <p><?php _e('Check out the sample courses we\'ve created for you.', 'quicklearn'); ?></p>
+                        </div>
+                        <div class="welcome-panel-column">
+                            <h3><?php _e('Customize Your Site', 'quicklearn'); ?></h3>
+                            <a class="button" href="<?php echo esc_url(admin_url('customize.php')); ?>"><?php _e('Customize', 'quicklearn'); ?></a>
+                            <p><?php _e('Update colors, logo, and site settings to match your brand.', 'quicklearn'); ?></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="quicklearn-feature-list">
+                <h2><?php _e('What\'s Included', 'quicklearn'); ?></h2>
+                
+                <div class="quicklearn-features-grid">
+                    <div class="quicklearn-feature">
+                        <h3>📚 Sample Courses</h3>
+                        <p><?php _e('5 complete sample courses across different categories to help you get started.', 'quicklearn'); ?></p>
+                    </div>
+                    
+                    <div class="quicklearn-feature">
+                        <h3>👥 User Roles</h3>
+                        <p><?php _e('Student, Instructor, and Moderator roles with appropriate permissions.', 'quicklearn'); ?></p>
+                    </div>
+                    
+                    <div class="quicklearn-feature">
+                        <h3>📄 Essential Pages</h3>
+                        <p><?php _e('Dashboard, Courses, Profile, About, Contact, and legal pages.', 'quicklearn'); ?></p>
+                    </div>
+                    
+                    <div class="quicklearn-feature">
+                        <h3>🎨 Modern Design</h3>
+                        <p><?php _e('Professional, responsive design with accessibility features.', 'quicklearn'); ?></p>
+                    </div>
+                    
+                    <div class="quicklearn-feature">
+                        <h3>🔐 Demo Accounts</h3>
+                        <p><?php _e('Pre-created instructor and student accounts for testing.', 'quicklearn'); ?></p>
+                    </div>
+                    
+                    <div class="quicklearn-feature">
+                        <h3>⚡ Performance</h3>
+                        <p><?php _e('Optimized for speed with modern CSS and JavaScript.', 'quicklearn'); ?></p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="quicklearn-demo-accounts">
+                <h2><?php _e('Demo Accounts', 'quicklearn'); ?></h2>
+                <p><?php _e('Use these accounts to test different user experiences:', 'quicklearn'); ?></p>
+                
+                <div class="demo-accounts-grid">
+                    <div class="demo-account">
+                        <h4><?php _e('Instructor Account', 'quicklearn'); ?></h4>
+                        <p><strong><?php _e('Username:', 'quicklearn'); ?></strong> instructor_demo</p>
+                        <p><strong><?php _e('Password:', 'quicklearn'); ?></strong> instructor123</p>
+                        <p><?php _e('Can create and manage courses', 'quicklearn'); ?></p>
+                    </div>
+                    
+                    <div class="demo-account">
+                        <h4><?php _e('Student Account', 'quicklearn'); ?></h4>
+                        <p><strong><?php _e('Username:', 'quicklearn'); ?></strong> student_demo</p>
+                        <p><strong><?php _e('Password:', 'quicklearn'); ?></strong> student123</p>
+                        <p><?php _e('Can enroll in and view courses', 'quicklearn'); ?></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <style>
+    .quicklearn-getting-started {
+        max-width: 1200px;
+    }
+    
+    .quicklearn-features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+        margin: 2rem 0;
+    }
+    
+    .quicklearn-feature {
+        background: #fff;
+        border: 1px solid #ccd0d4;
+        border-radius: 4px;
+        padding: 1.5rem;
+    }
+    
+    .quicklearn-feature h3 {
+        margin-top: 0;
+        margin-bottom: 1rem;
+        font-size: 16px;
+    }
+    
+    .demo-accounts-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
+        margin: 2rem 0;
+    }
+    
+    .demo-account {
+        background: #f8f9fa;
+        border: 1px solid #e9ecef;
+        border-radius: 4px;
+        padding: 1.5rem;
+    }
+    
+    .demo-account h4 {
+        margin-top: 0;
+        margin-bottom: 1rem;
+        color: #23282d;
+    }
+    
+    .demo-account p {
+        margin: 0.5rem 0;
+    }
+    </style>
+    <?php
+}
+
+/**
+ * Register settings
+ */
+function quicklearn_register_settings() {
+    register_setting('quicklearn_settings', 'quicklearn_courses_per_page');
+    register_setting('quicklearn_settings', 'quicklearn_enable_course_reviews');
+    register_setting('quicklearn_settings', 'quicklearn_enable_course_ratings');
+    register_setting('quicklearn_settings', 'quicklearn_currency_symbol');
+}
+add_action('admin_init', 'quicklearn_register_settings');

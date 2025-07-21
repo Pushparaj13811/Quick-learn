@@ -7,133 +7,156 @@
 
 get_header(); ?>
 
-<div id="primary" class="content-area">
-    <main id="main" class="site-main">
-        
-        <?php while (have_posts()) : the_post(); ?>
-            <div class="page-header">
-                <h1 class="page-title"><?php the_title(); ?></h1>
-                <?php if (get_the_content()) : ?>
-                    <div class="page-description">
-                        <?php the_content(); ?>
-                    </div>
-                <?php endif; ?>
-            </div>
-        <?php endwhile; ?>
-
-        <div class="courses-container">
-            <!-- Course Filter Section -->
-            <div class="course-filters">
-                <div class="filter-container">
-                    <label for="course-category-filter" class="filter-label">
-                        <?php esc_html_e('Filter by Category:', 'quicklearn'); ?>
-                    </label>
-                    <select id="course-category-filter" class="course-filter-dropdown" aria-describedby="filter-description">
-                        <option value=""><?php esc_html_e('All Categories', 'quicklearn'); ?></option>
-                        <?php
-                        $categories = get_terms(array(
-                            'taxonomy' => 'course_category',
-                            'hide_empty' => true,
-                        ));
-                        
-                        // Check for selected category from URL parameter (Requirement 5.1)
-                        $selected_category = '';
-                        if (isset($_GET['category'])) {
-                            $selected_category = sanitize_text_field($_GET['category']);
-                            $selected_category = sanitize_title($selected_category);
-                            // Additional validation - only allow valid slug format
-                            $selected_category = preg_replace('/[^a-z0-9\-_]/', '', strtolower($selected_category));
-                        }
-                        
-                        if (!is_wp_error($categories) && !empty($categories)) {
-                            foreach ($categories as $category) {
-                                printf(
-                                    '<option value="%s"%s>%s (%d)</option>',
-                                    esc_attr($category->slug),
-                                    selected($selected_category, $category->slug, false),
-                                    esc_html($category->name),
-                                    $category->count
-                                );
-                            }
-                        }
-                        ?>
-                    </select>
-                    <small id="filter-description" class="filter-description">
-                        <?php esc_html_e('Select a category to filter courses', 'quicklearn'); ?>
-                    </small>
+<main id="primary" class="site-main">
+    <div class="container">
+        <header class="page-header">
+            <h1 class="page-title"><?php the_title(); ?></h1>
+            <?php if (get_the_content()) : ?>
+                <div class="page-description">
+                    <?php the_content(); ?>
                 </div>
-                
-                <div class="loading-indicator" style="display: none;" role="status" aria-live="polite">
-                    <span class="spinner" aria-hidden="true"></span>
-                    <span class="loading-text"><?php esc_html_e('Loading courses...', 'quicklearn'); ?></span>
+            <?php endif; ?>
+        </header>
+
+        <div class="courses-page-content">
+            <!-- Course Filters -->
+            <div class="course-filters">
+                <div class="filter-row">
+                    <div class="filter-group">
+                        <label for="course-search"><?php _e('Search Courses:', 'quicklearn'); ?></label>
+                        <input type="text" id="course-search" placeholder="<?php _e('Search courses...', 'quicklearn'); ?>" class="form-input">
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label for="course-category"><?php _e('Category:', 'quicklearn'); ?></label>
+                        <select id="course-category" class="form-select">
+                            <option value=""><?php _e('All Categories', 'quicklearn'); ?></option>
+                            <?php
+                            $categories = get_terms(array(
+                                'taxonomy' => 'course_category',
+                                'hide_empty' => false,
+                            ));
+                            if (!is_wp_error($categories)) {
+                                foreach ($categories as $category) {
+                                    echo '<option value="' . esc_attr($category->slug) . '">' . esc_html($category->name) . '</option>';
+                                }
+                            }
+                            ?>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label for="course-level"><?php _e('Level:', 'quicklearn'); ?></label>
+                        <select id="course-level" class="form-select">
+                            <option value=""><?php _e('All Levels', 'quicklearn'); ?></option>
+                            <option value="beginner"><?php _e('Beginner', 'quicklearn'); ?></option>
+                            <option value="intermediate"><?php _e('Intermediate', 'quicklearn'); ?></option>
+                            <option value="advanced"><?php _e('Advanced', 'quicklearn'); ?></option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label for="course-sort"><?php _e('Sort by:', 'quicklearn'); ?></label>
+                        <select id="course-sort" class="form-select">
+                            <option value="date"><?php _e('Newest First', 'quicklearn'); ?></option>
+                            <option value="title"><?php _e('Title', 'quicklearn'); ?></option>
+                            <option value="price"><?php _e('Price', 'quicklearn'); ?></option>
+                            <option value="rating"><?php _e('Rating', 'quicklearn'); ?></option>
+                        </select>
+                    </div>
                 </div>
             </div>
 
             <!-- Courses Grid -->
-            <div id="courses-grid" class="courses-grid">
-                <?php
-                // Query for courses
-                $courses_query = new WP_Query(array(
-                    'post_type' => 'quick_course',
-                    'post_status' => 'publish',
-                    'posts_per_page' => 12,
-                    'orderby' => 'date',
-                    'order' => 'DESC',
-                ));
-
-                if ($courses_query->have_posts()) :
-                    while ($courses_query->have_posts()) : $courses_query->the_post();
-                        get_template_part('template-parts/course-card');
-                    endwhile;
-                    wp_reset_postdata();
-                else :
-                    ?>
-                    <div class="no-courses-found">
-                        <h3><?php esc_html_e('No courses found', 'quicklearn'); ?></h3>
-                        <p><?php esc_html_e('There are currently no courses available. Please check back later.', 'quicklearn'); ?></p>
-                    </div>
+            <div id="courses-container" class="courses-container">
+                <div class="courses-grid grid grid--courses">
                     <?php
-                endif;
-                ?>
-            </div>
+                    $courses_query = new WP_Query(array(
+                        'post_type' => 'quick_course',
+                        'posts_per_page' => get_option('quicklearn_courses_per_page', 12),
+                        'post_status' => 'publish'
+                    ));
 
-            <!-- Load More Button for AJAX Pagination -->
-            <?php if ($courses_query->max_num_pages > 1) : ?>
-                <div class="courses-pagination">
-                    <button class="load-more-courses btn btn-primary" 
-                            data-page="1"
-                            data-max-pages="<?php echo esc_attr($courses_query->max_num_pages); ?>"
-                            data-category=""
-                            data-posts-per-page="12"
-                            data-loading-text="<?php esc_attr_e('Loading...', 'quicklearn'); ?>"
-                            data-original-text="<?php esc_attr_e('Load More Courses', 'quicklearn'); ?>">
-                        <?php esc_html_e('Load More Courses', 'quicklearn'); ?>
-                    </button>
-                    
-                    <!-- Fallback traditional pagination (hidden by default, shown if JS disabled) -->
-                    <noscript>
-                        <div class="traditional-pagination">
-                            <?php
-                            echo paginate_links(array(
-                                'total' => $courses_query->max_num_pages,
-                                'current' => max(1, get_query_var('paged')),
-                                'format' => '?paged=%#%',
-                                'show_all' => false,
-                                'end_size' => 1,
-                                'mid_size' => 2,
-                                'prev_next' => true,
-                                'prev_text' => __('&laquo; Previous', 'quicklearn'),
-                                'next_text' => __('Next &raquo;', 'quicklearn'),
-                                'type' => 'plain',
-                            ));
+                    if ($courses_query->have_posts()) :
+                        while ($courses_query->have_posts()) : $courses_query->the_post();
                             ?>
+                            <article class="course-card card">
+                                <?php if (has_post_thumbnail()) : ?>
+                                    <div class="card__image-container">
+                                        <?php the_post_thumbnail('medium', array('class' => 'card__image')); ?>
+                                        <div class="card__badge card__badge--primary">
+                                            <?php echo esc_html(get_post_meta(get_the_ID(), 'course_level', true) ?: 'Beginner'); ?>
+                                        </div>
+                                    </div>
+                                <?php endif; ?>
+                                
+                                <div class="card__content">
+                                    <h3 class="card__title">
+                                        <a href="<?php the_permalink(); ?>"><?php the_title(); ?></a>
+                                    </h3>
+                                    
+                                    <div class="card__meta">
+                                        <span class="card__meta-item">
+                                            <span class="dashicons dashicons-clock"></span>
+                                            <?php echo esc_html(get_post_meta(get_the_ID(), 'course_duration', true) ?: '6 weeks'); ?>
+                                        </span>
+                                        <span class="card__meta-item">
+                                            <span class="dashicons dashicons-admin-users"></span>
+                                            <?php echo esc_html(get_post_meta(get_the_ID(), 'course_students', true) ?: '0'); ?> <?php _e('students', 'quicklearn'); ?>
+                                        </span>
+                                    </div>
+                                    
+                                    <div class="card__description">
+                                        <?php echo wp_trim_words(get_the_excerpt() ?: get_the_content(), 20); ?>
+                                    </div>
+                                    
+                                    <div class="course-card__instructor">
+                                        <?php
+                                        $instructor_id = get_post_meta(get_the_ID(), 'course_instructor', true);
+                                        if ($instructor_id) {
+                                            $instructor = get_user_by('login', $instructor_id);
+                                            if ($instructor) {
+                                                echo get_avatar($instructor->ID, 32, '', '', array('class' => 'course-card__instructor-avatar'));
+                                                echo '<span class="course-card__instructor-name">' . esc_html($instructor->display_name) . '</span>';
+                                            }
+                                        }
+                                        ?>
+                                    </div>
+                                    
+                                    <div class="card__actions">
+                                        <?php
+                                        $price = get_post_meta(get_the_ID(), 'course_price', true);
+                                        if ($price && $price > 0) {
+                                            echo '<span class="course-card__price">' . get_option('quicklearn_currency_symbol', '$') . esc_html($price) . '</span>';
+                                        } else {
+                                            echo '<span class="course-card__price course-card__price--free">' . __('Free', 'quicklearn') . '</span>';
+                                        }
+                                        ?>
+                                        <a href="<?php the_permalink(); ?>" class="btn btn--primary btn--sm">
+                                            <?php _e('View Course', 'quicklearn'); ?>
+                                        </a>
+                                    </div>
+                                </div>
+                            </article>
+                            <?php
+                        endwhile;
+                        wp_reset_postdata();
+                    else :
+                        ?>
+                        <div class="empty-state">
+                            <div class="empty-state__icon">
+                                <span class="dashicons dashicons-welcome-learn-more"></span>
+                            </div>
+                            <h3 class="empty-state__title"><?php _e('No courses found', 'quicklearn'); ?></h3>
+                            <p class="empty-state__message"><?php _e('There are no courses available at the moment. Please check back later.', 'quicklearn'); ?></p>
                         </div>
-                    </noscript>
+                        <?php
+                    endif;
+                    ?>
                 </div>
-            <?php endif; ?>
+            </div>
         </div>
-
-    </main><!-- #main -->
-</div><!-- #primary -->
+    </div>
+</main>
 
 <?php get_footer(); ?>
