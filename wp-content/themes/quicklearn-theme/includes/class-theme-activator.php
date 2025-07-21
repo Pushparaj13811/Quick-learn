@@ -108,6 +108,11 @@ class QuickLearn_Theme_Activator {
                 'title' => 'Terms of Service',
                 'content' => $this->get_terms_content(),
                 'template' => 'page.php'
+            ),
+            'register' => array(
+                'title' => 'Register',
+                'content' => '',
+                'template' => 'page-register.php'
             )
         );
         
@@ -426,6 +431,10 @@ class QuickLearn_Theme_Activator {
         // Site identity
         update_option('blogname', 'QuickLearn Academy');
         update_option('blogdescription', 'Master New Skills with Expert-Led Online Courses');
+        
+        // Enable user registration
+        update_option('users_can_register', 1);
+        update_option('default_role', 'qlcm_student');
         
         // Discussion settings
         update_option('default_comment_status', 'open');
