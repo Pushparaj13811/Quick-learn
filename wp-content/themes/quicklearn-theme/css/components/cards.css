@@ -1,0 +1,515 @@
+/**
+ * Card Component System
+ * Unified card styles for QuickLearn
+ */
+
+/* Base Card */
+.card {
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  transition: all var(--transition-slow);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-xl);
+  border-color: var(--color-primary-light);
+}
+
+/* Card Variants */
+.card--interactive {
+  cursor: pointer;
+}
+
+.card--elevated {
+  box-shadow: var(--shadow-md);
+}
+
+.card--elevated:hover {
+  box-shadow: var(--shadow-2xl);
+  transform: translateY(-6px);
+}
+
+.card--flat {
+  border: none;
+  box-shadow: none;
+  background: transparent;
+}
+
+.card--outlined {
+  border: 2px solid var(--color-border);
+  background: var(--color-background);
+}
+
+.card--outlined:hover {
+  border-color: var(--color-primary);
+}
+
+/* Card Components */
+.card__header {
+  padding: var(--space-6);
+  border-bottom: 1px solid var(--color-border-light);
+  background: var(--color-background-light);
+}
+
+.card__image {
+  width: 100%;
+  aspect-ratio: 16/9;
+  object-fit: cover;
+  display: block;
+}
+
+.card__image--square {
+  aspect-ratio: 1/1;
+}
+
+.card__image--portrait {
+  aspect-ratio: 3/4;
+}
+
+.card__image-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.card__image-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    transparent 50%,
+    rgba(0, 0, 0, 0.6) 100%
+  );
+  display: flex;
+  align-items: flex-end;
+  padding: var(--space-6);
+  color: white;
+}
+
+.card__content {
+  padding: var(--space-6);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.card__content--compact {
+  padding: var(--space-4);
+}
+
+.card__content--spacious {
+  padding: var(--space-8);
+}
+
+.card__title {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-3);
+  line-height: var(--line-height-tight);
+}
+
+.card__title a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.card__title a:hover {
+  color: var(--color-primary);
+}
+
+.card__subtitle {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-2);
+  font-weight: var(--font-weight-medium);
+}
+
+.card__description {
+  color: var(--color-text-secondary);
+  line-height: var(--line-height-normal);
+  margin-bottom: var(--space-4);
+  flex: 1;
+}
+
+.card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  margin-bottom: var(--space-4);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.card__meta-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.card__meta-item .icon {
+  width: 14px;
+  height: 14px;
+  opacity: 0.7;
+}
+
+.card__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+}
+
+.card__tag {
+  background: var(--color-background-light);
+  color: var(--color-text-secondary);
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  text-decoration: none;
+  transition: all var(--transition-base);
+}
+
+.card__tag:hover {
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+}
+
+.card__actions {
+  display: flex;
+  gap: var(--space-3);
+  margin-top: auto;
+  padding-top: var(--space-4);
+}
+
+.card__actions--center {
+  justify-content: center;
+}
+
+.card__actions--end {
+  justify-content: flex-end;
+}
+
+.card__footer {
+  padding: var(--space-4) var(--space-6);
+  border-top: 1px solid var(--color-border-light);
+  background: var(--color-background-light);
+}
+
+/* Badge Overlay */
+.card__badge {
+  position: absolute;
+  top: var(--space-4);
+  right: var(--space-4);
+  background: var(--color-primary);
+  color: white;
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  z-index: 1;
+}
+
+.card__badge--success {
+  background: var(--color-success);
+}
+
+.card__badge--warning {
+  background: var(--color-warning);
+  color: var(--color-text-primary);
+}
+
+.card__badge--danger {
+  background: var(--color-error);
+}
+
+/* Progress Indicator */
+.card__progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--color-border-light);
+}
+
+.card__progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-primary), var(--color-success));
+  transition: width var(--transition-slow);
+}
+
+/* Course Card Specific */
+.course-card {
+  transition: all var(--transition-slow);
+}
+
+.course-card:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-2xl);
+}
+
+.course-card__instructor {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.course-card__instructor-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.course-card__instructor-name {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+}
+
+.course-card__rating {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+}
+
+.course-card__price {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary);
+}
+
+.course-card__price--free {
+  color: var(--color-success);
+}
+
+.course-card__original-price {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  text-decoration: line-through;
+  margin-left: var(--space-2);
+}
+
+/* Statistics Card */
+.stat-card {
+  text-align: center;
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  transition: all var(--transition-slow);
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.stat-card--primary {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-hover));
+  color: white;
+  border: none;
+}
+
+.stat-card--success {
+  background: linear-gradient(135deg, var(--color-success), var(--color-success-hover));
+  color: white;
+  border: none;
+}
+
+.stat-card__icon {
+  width: 48px;
+  height: 48px;
+  background: var(--color-background-light);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto var(--space-4);
+}
+
+.stat-card--primary .stat-card__icon,
+.stat-card--success .stat-card__icon {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.stat-card__number {
+  font-size: var(--font-size-4xl);
+  font-weight: var(--font-weight-bold);
+  line-height: 1;
+  margin-bottom: var(--space-2);
+}
+
+.stat-card__label {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  font-weight: var(--font-weight-medium);
+}
+
+.stat-card--primary .stat-card__label,
+.stat-card--success .stat-card__label {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* Profile Card */
+.profile-card {
+  text-align: center;
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-8);
+  transition: all var(--transition-slow);
+}
+
+.profile-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-xl);
+}
+
+.profile-card__avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin: 0 auto var(--space-4);
+  border: 3px solid var(--color-primary-light);
+}
+
+.profile-card__name {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  margin-bottom: var(--space-2);
+}
+
+.profile-card__role {
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-4);
+  font-size: var(--font-size-sm);
+}
+
+.profile-card__stats {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: var(--space-6);
+  border-top: 1px solid var(--color-border-light);
+  border-bottom: 1px solid var(--color-border-light);
+  padding: var(--space-4) 0;
+}
+
+.profile-card__stat {
+  text-align: center;
+}
+
+.profile-card__stat-number {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary);
+  display: block;
+}
+
+.profile-card__stat-label {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+/* Responsive Design */
+@media (max-width: 767px) {
+  .card__content {
+    padding: var(--space-4);
+  }
+  
+  .card__content--spacious {
+    padding: var(--space-6);
+  }
+  
+  .card__header,
+  .card__footer {
+    padding: var(--space-4);
+  }
+  
+  .card__title {
+    font-size: var(--font-size-lg);
+  }
+  
+  .course-card__instructor {
+    flex-direction: column;
+    text-align: center;
+    gap: var(--space-2);
+  }
+  
+  .stat-card {
+    padding: var(--space-4);
+  }
+  
+  .stat-card__number {
+    font-size: var(--font-size-3xl);
+  }
+  
+  .profile-card {
+    padding: var(--space-6);
+  }
+  
+  .profile-card__stats {
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .card,
+  .course-card,
+  .stat-card,
+  .profile-card {
+    transition: none;
+  }
+  
+  .card:hover,
+  .course-card:hover,
+  .stat-card:hover,
+  .profile-card:hover {
+    transform: none;
+  }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  .card {
+    border-width: 2px;
+  }
+  
+  .card:hover {
+    transform: none;
+    box-shadow: none;
+    border-color: var(--color-text-primary);
+  }
+}
+
+/* Dark Mode Adjustments */
+@media (prefers-color-scheme: dark) {
+  .card__header,
+  .card__footer {
+    background: var(--color-background-light);
+  }
+  
+  .card__tag {
+    background: var(--color-background-light);
+  }
+  
+  .stat-card__icon {
+    background: var(--color-background-light);
+  }
+}

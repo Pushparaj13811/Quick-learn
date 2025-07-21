@@ -120,12 +120,73 @@ add_action('after_setup_theme', 'quicklearn_theme_setup');
  * Enqueue scripts and styles
  */
 function quicklearn_enqueue_scripts() {
+    $theme_version = wp_get_theme()->get('Version');
+    
+    // Enqueue design tokens first (foundation)
+    wp_enqueue_style(
+        'quicklearn-design-tokens',
+        get_template_directory_uri() . '/css/design-tokens.css',
+        array(),
+        $theme_version
+    );
+    
+    // Enqueue component stylesheets
+    wp_enqueue_style(
+        'quicklearn-buttons',
+        get_template_directory_uri() . '/css/components/buttons.css',
+        array('quicklearn-design-tokens'),
+        $theme_version
+    );
+    
+    wp_enqueue_style(
+        'quicklearn-cards',
+        get_template_directory_uri() . '/css/components/cards.css',
+        array('quicklearn-design-tokens'),
+        $theme_version
+    );
+    
+    wp_enqueue_style(
+        'quicklearn-forms',
+        get_template_directory_uri() . '/css/components/forms.css',
+        array('quicklearn-design-tokens'),
+        $theme_version
+    );
+    
+    wp_enqueue_style(
+        'quicklearn-grid',
+        get_template_directory_uri() . '/css/components/grid.css',
+        array('quicklearn-design-tokens'),
+        $theme_version
+    );
+    
+    wp_enqueue_style(
+        'quicklearn-progress',
+        get_template_directory_uri() . '/css/components/progress.css',
+        array('quicklearn-design-tokens'),
+        $theme_version
+    );
+    
+    wp_enqueue_style(
+        'quicklearn-modal',
+        get_template_directory_uri() . '/css/components/modal.css',
+        array('quicklearn-design-tokens'),
+        $theme_version
+    );
+    
     // Enqueue main stylesheet
     wp_enqueue_style(
         'quicklearn-style',
         get_stylesheet_uri(),
-        array(),
-        wp_get_theme()->get('Version')
+        array(
+            'quicklearn-design-tokens',
+            'quicklearn-buttons',
+            'quicklearn-cards',
+            'quicklearn-forms',
+            'quicklearn-grid',
+            'quicklearn-progress',
+            'quicklearn-modal'
+        ),
+        $theme_version
     );
     
     // Enqueue custom CSS
@@ -133,7 +194,7 @@ function quicklearn_enqueue_scripts() {
         'quicklearn-custom',
         get_template_directory_uri() . '/css/custom.css',
         array('quicklearn-style'),
-        wp_get_theme()->get('Version')
+        $theme_version
     );
     
     // Enqueue front page CSS (only on front page)
@@ -142,7 +203,7 @@ function quicklearn_enqueue_scripts() {
             'quicklearn-front-page',
             get_template_directory_uri() . '/css/front-page.css',
             array('quicklearn-custom'),
-            wp_get_theme()->get('Version')
+            $theme_version
         );
     }
     
@@ -152,7 +213,7 @@ function quicklearn_enqueue_scripts() {
             'quicklearn-dashboard',
             get_template_directory_uri() . '/css/dashboard.css',
             array('quicklearn-custom'),
-            wp_get_theme()->get('Version')
+            $theme_version
         );
     }
     
@@ -161,7 +222,7 @@ function quicklearn_enqueue_scripts() {
         'quicklearn-navigation',
         get_template_directory_uri() . '/css/navigation.css',
         array('quicklearn-custom'),
-        wp_get_theme()->get('Version')
+        $theme_version
     );
     
     // Enqueue navigation script
