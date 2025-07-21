@@ -52,6 +52,94 @@
                 ));
                 ?>
             </nav><!-- #site-navigation -->
+            
+            <!-- User Menu -->
+            <div class="user-menu">
+                <?php if (is_user_logged_in()) : ?>
+                    <?php 
+                    $current_user = wp_get_current_user();
+                    $dashboard_page_id = get_option('quicklearn_dashboard_page_id');
+                    $dashboard_url = $dashboard_page_id ? get_permalink($dashboard_page_id) : admin_url();
+                    ?>
+                    <div class="user-dropdown">
+                        <button class="user-toggle" aria-expanded="false">
+                            <?php echo get_avatar($current_user->ID, 32); ?>
+                            <span class="user-name"><?php echo esc_html($current_user->display_name); ?></span>
+                            <span class="dropdown-arrow">▼</span>
+                        </button>
+                        <div class="user-dropdown-menu">
+                            <div class="user-info">
+                                <div class="user-avatar-large">
+                                    <?php echo get_avatar($current_user->ID, 48); ?>
+                                </div>
+                                <div class="user-details">
+                                    <strong><?php echo esc_html($current_user->display_name); ?></strong>
+                                    <span class="user-role">
+                                        <?php 
+                                        $user_roles = $current_user->roles;
+                                        if (in_array('administrator', $user_roles)) {
+                                            esc_html_e('Administrator', 'quicklearn');
+                                        } elseif (in_array('qlcm_instructor', $user_roles)) {
+                                            esc_html_e('Instructor', 'quicklearn');
+                                        } elseif (in_array('qlcm_course_moderator', $user_roles)) {
+                                            esc_html_e('Moderator', 'quicklearn');
+                                        } else {
+                                            esc_html_e('Student', 'quicklearn');
+                                        }
+                                        ?>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="user-menu-links">
+                                <a href="<?php echo esc_url($dashboard_url); ?>" class="user-menu-link">
+                                    <span class="dashicons dashicons-dashboard"></span>
+                                    <?php esc_html_e('Dashboard', 'quicklearn'); ?>
+                                </a>
+                                
+                                <?php if (current_user_can('qlcm_create_courses')) : ?>
+                                    <a href="<?php echo esc_url(admin_url('post-new.php?post_type=quick_course')); ?>" class="user-menu-link">
+                                        <span class="dashicons dashicons-plus-alt"></span>
+                                        <?php esc_html_e('Create Course', 'quicklearn'); ?>
+                                    </a>
+                                <?php endif; ?>
+                                
+                                <?php if (current_user_can('manage_options')) : ?>
+                                    <a href="<?php echo esc_url(admin_url()); ?>" class="user-menu-link">
+                                        <span class="dashicons dashicons-admin-settings"></span>
+                                        <?php esc_html_e('Admin Panel', 'quicklearn'); ?>
+                                    </a>
+                                <?php endif; ?>
+                                
+                                <a href="<?php echo esc_url(get_edit_user_link()); ?>" class="user-menu-link">
+                                    <span class="dashicons dashicons-admin-users"></span>
+                                    <?php esc_html_e('My Profile', 'quicklearn'); ?>
+                                </a>
+                                
+                                <a href="<?php echo esc_url(get_post_type_archive_link('quick_course')); ?>" class="user-menu-link">
+                                    <span class="dashicons dashicons-book"></span>
+                                    <?php esc_html_e('Browse Courses', 'quicklearn'); ?>
+                                </a>
+                                
+                                <div class="user-menu-separator"></div>
+                                
+                                <a href="<?php echo esc_url(wp_logout_url(home_url())); ?>" class="user-menu-link logout-link">
+                                    <span class="dashicons dashicons-exit"></span>
+                                    <?php esc_html_e('Logout', 'quicklearn'); ?>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                <?php else : ?>
+                    <div class="auth-links">
+                        <a href="<?php echo esc_url(wp_login_url()); ?>" class="login-link">
+                            <?php esc_html_e('Login', 'quicklearn'); ?>
+                        </a>
+                        <a href="<?php echo esc_url(wp_registration_url()); ?>" class="register-link btn btn--primary">
+                            <?php esc_html_e('Sign Up', 'quicklearn'); ?>
+                        </a>
+                    </div>
+                <?php endif; ?>
+            </div><!-- .user-menu -->
         </div><!-- .header-container -->
     </header><!-- #masthead -->
 

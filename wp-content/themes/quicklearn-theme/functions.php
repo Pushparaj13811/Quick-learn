@@ -136,6 +136,34 @@ function quicklearn_enqueue_scripts() {
         wp_get_theme()->get('Version')
     );
     
+    // Enqueue front page CSS (only on front page)
+    if (is_front_page()) {
+        wp_enqueue_style(
+            'quicklearn-front-page',
+            get_template_directory_uri() . '/css/front-page.css',
+            array('quicklearn-custom'),
+            wp_get_theme()->get('Version')
+        );
+    }
+    
+    // Enqueue dashboard CSS (only on dashboard page)
+    if (is_page('dashboard') || is_page_template('page-dashboard.php')) {
+        wp_enqueue_style(
+            'quicklearn-dashboard',
+            get_template_directory_uri() . '/css/dashboard.css',
+            array('quicklearn-custom'),
+            wp_get_theme()->get('Version')
+        );
+    }
+    
+    // Enqueue enhanced navigation CSS
+    wp_enqueue_style(
+        'quicklearn-navigation',
+        get_template_directory_uri() . '/css/navigation.css',
+        array('quicklearn-custom'),
+        wp_get_theme()->get('Version')
+    );
+    
     // Enqueue navigation script
     wp_enqueue_script(
         'quicklearn-navigation',

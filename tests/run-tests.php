@@ -173,20 +173,23 @@ class QLCM_Test_Runner {
         $this->total_tests++;
         
         try {
-            if (post_type_exists('quick_course')) {
+            if (function_exists('post_type_exists') && post_type_exists('quick_course')) {
                 $this->log_success("Course post type is registered");
                 
-                $post_type = get_post_type_object('quick_course');
+                $post_type = function_exists('get_post_type_object') ? get_post_type_object('quick_course') : null;
                 
                 // Test post type properties
-                $tests = array(
-                    'public' => $post_type->public,
-                    'show_ui' => $post_type->show_ui,
-                    'has_archive' => $post_type->has_archive,
-                    'supports_title' => post_type_supports('quick_course', 'title'),
-                    'supports_editor' => post_type_supports('quick_course', 'editor'),
-                    'supports_thumbnail' => post_type_supports('quick_course', 'thumbnail'),
-                );
+                $tests = array();
+                if ($post_type) {
+                    $tests = array(
+                        'public' => $post_type->public,
+                        'show_ui' => $post_type->show_ui,
+                        'has_archive' => $post_type->has_archive,
+                        'supports_title' => function_exists('post_type_supports') ? post_type_supports('quick_course', 'title') : false,
+                        'supports_editor' => function_exists('post_type_supports') ? post_type_supports('quick_course', 'editor') : false,
+                        'supports_thumbnail' => function_exists('post_type_supports') ? post_type_supports('quick_course', 'thumbnail') : false,
+                    );
+                }
                 
                 $all_passed = true;
                 foreach ($tests as $test_name => $result) {
@@ -222,18 +225,21 @@ class QLCM_Test_Runner {
         $this->total_tests++;
         
         try {
-            if (taxonomy_exists('course_category')) {
+            if (function_exists('taxonomy_exists') && taxonomy_exists('course_category')) {
                 $this->log_success("Course category taxonomy is registered");
                 
-                $taxonomy = get_taxonomy('course_category');
+                $taxonomy = function_exists('get_taxonomy') ? get_taxonomy('course_category') : null;
                 
                 // Test taxonomy properties
-                $tests = array(
-                    'public' => $taxonomy->public,
-                    'show_ui' => $taxonomy->show_ui,
-                    'hierarchical' => $taxonomy->hierarchical,
-                    'associated_with_courses' => in_array('quick_course', $taxonomy->object_type),
-                );
+                $tests = array();
+                if ($taxonomy) {
+                    $tests = array(
+                        'public' => $taxonomy->public,
+                        'show_ui' => $taxonomy->show_ui,
+                        'hierarchical' => $taxonomy->hierarchical,
+                        'associated_with_courses' => in_array('quick_course', $taxonomy->object_type),
+                    );
+                }
                 
                 $all_passed = true;
                 foreach ($tests as $test_name => $result) {
@@ -277,7 +283,7 @@ class QLCM_Test_Runner {
             
             $all_registered = true;
             foreach ($ajax_actions as $action) {
-                if (has_action($action)) {
+                if (function_exists('has_action') && has_action($action)) {
                     $this->log_success("AJAX action {$action} is registered");
                 } else {
                     $this->log_failure("AJAX action {$action} is not registered");
@@ -341,6 +347,13 @@ class QLCM_Test_Runner {
         $this->total_tests++;
         
         try {
+            // Check if WordPress functions are available
+            if (!function_exists('wp_create_user') || !function_exists('is_wp_error') || !function_exists('wp_set_current_user')) {
+                $this->log_failure("WordPress user functions not available");
+                $this->failed_tests++;
+                return;
+            }
+            
             // Create test admin user
             $admin_id = wp_create_user('test_admin_' . time(), 'password', 'admin@test.com');
             if (is_wp_error($admin_id)) {
@@ -349,8 +362,10 @@ class QLCM_Test_Runner {
                 return;
             }
             
-            $user = new WP_User($admin_id);
-            $user->set_role('administrator');
+            if (class_exists('WP_User')) {
+                $user = new WP_User($admin_id);
+                $user->set_role('administrator');
+            }
             
             wp_set_current_user($admin_id);
             
@@ -375,8 +390,12 @@ class QLCM_Test_Runner {
             }
             
             // Clean up
-            wp_delete_user($admin_id);
-            wp_set_current_user(0);
+            if (function_exists('wp_delete_user')) {
+                wp_delete_user($admin_id);
+            }
+            if (function_exists('wp_set_current_user')) {
+                wp_set_current_user(0);
+            }
             
             $this->passed_tests++;
             
@@ -404,7 +423,7 @@ class QLCM_Test_Runner {
         $all_files_exist = true;
         
         foreach ($js_files as $js_file) {
-            $file_path = ABSPATH . $js_file;
+            $file_path = (defined('ABSPATH') ? ABSPATH : getcwd() . '/') . $js_file;
             if (file_exists($file_path)) {
                 $this->log_success("JavaScript file exists: {$js_file}");
             } else {
@@ -431,7 +450,7 @@ class QLCM_Test_Runner {
         $all_css_exist = true;
         
         foreach ($css_files as $css_file) {
-            $file_path = ABSPATH . $css_file;
+            $file_path = (defined('ABSPATH') ? ABSPATH : getcwd() . '/') . $css_file;
             if (file_exists($file_path)) {
                 $this->log_success("CSS file exists: {$css_file}");
             } else {
@@ -459,25 +478,32 @@ class QLCM_Test_Runner {
         
         try {
             // Test database query performance
-            $start_time = microtime(true);
-            
-            $query = new WP_Query(array(
-                'post_type' => 'quick_course',
-                'post_status' => 'publish',
-                'posts_per_page' => 10,
-            ));
-            
-            $query_time = microtime(true) - $start_time;
-            
-            if ($query_time < 0.5) {
-                $this->log_success("Database query performance: {$query_time}s (Good)");
-                $this->passed_tests++;
+            if (class_exists('WP_Query')) {
+                $start_time = microtime(true);
+                
+                $query = new WP_Query(array(
+                    'post_type' => 'quick_course',
+                    'post_status' => 'publish',
+                    'posts_per_page' => 10,
+                ));
+                
+                $query_time = microtime(true) - $start_time;
+                
+                if ($query_time < 0.5) {
+                    $this->log_success("Database query performance: {$query_time}s (Good)");
+                    $this->passed_tests++;
+                } else {
+                    $this->log_failure("Database query performance: {$query_time}s (Slow)");
+                    $this->failed_tests++;
+                }
+                
+                if (function_exists('wp_reset_postdata')) {
+                    wp_reset_postdata();
+                }
             } else {
-                $this->log_failure("Database query performance: {$query_time}s (Slow)");
+                $this->log_failure("WP_Query class not available");
                 $this->failed_tests++;
             }
-            
-            wp_reset_postdata();
             
         } catch (Exception $e) {
             $this->log_failure("Performance test failed: " . $e->getMessage());
